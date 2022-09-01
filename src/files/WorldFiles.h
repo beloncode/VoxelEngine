@@ -1,6 +1,7 @@
 #ifndef FILES_WORLDFILES_H_
 #define FILES_WORLDFILES_H_
 
+#include <string>
 #include <map>
 #include <unordered_map>
 

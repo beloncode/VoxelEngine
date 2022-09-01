@@ -67,7 +67,6 @@ void LineBatch::box(float x, float y, float z, float w, float h, float d,
 	line(x+w, y+h, z-d, x+w, y+h, z+d, r,g,b,a);
 }
 
-#include <iostream>
 void LineBatch::render(){
 	if (index == 0)
 		return;

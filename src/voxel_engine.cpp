@@ -4,35 +4,24 @@
 #include <cmath>
 
 #define GLEW_STATIC
-#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 #include <vector>
-#include <ctime>
 
 // GLM
 #include <glm/glm.hpp>
-#include <glm/ext.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 
 using namespace glm;
 
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Mesh.h"
 #include "graphics/VoxelRenderer.h"
 #include "graphics/LineBatch.h"
 #include "window/Window.h"
 #include "window/Events.h"
 #include "window/Camera.h"
-#include "loaders/png_loading.h"
 #include "voxels/voxel.h"
 #include "voxels/Chunk.h"
 #include "voxels/Chunks.h"
-#include "voxels/Block.h"
-#include "voxels/WorldGenerator.h"
 #include "voxels/ChunksController.h"
-#include "files/files.h"
 #include "files/WorldFiles.h"
 #include "lighting/LightSolver.h"
 #include "lighting/Lightmap.h"
@@ -45,7 +34,6 @@ using namespace glm;
 
 #include "declarations.h"
 #include "world_render.h"
-
 
 // Save all world data to files
 void write_world(WorldFiles* wfile, Chunks* chunks){

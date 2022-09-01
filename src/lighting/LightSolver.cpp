@@ -3,7 +3,6 @@
 #include "LightSolver.h"
 #include "Lightmap.h"
 #include "../voxels/Chunks.h"
-#include "../voxels/Chunk.h"
 #include "../voxels/voxel.h"
 #include "../voxels/Block.h"
 
