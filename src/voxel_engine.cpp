@@ -4,6 +4,7 @@
 #include <cmath>
 
 #define GLEW_STATIC
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 #include <vector>
@@ -34,6 +35,7 @@ using namespace glm;
 
 #include "declarations.h"
 #include "world_render.h"
+
 
 // Save all world data to files
 void write_world(WorldFiles* wfile, Chunks* chunks){
@@ -275,7 +277,7 @@ int main() {
 	ChunksController chunksController(chunks, &lighting);
 
 	float lastTime = glfwGetTime();
-	float delta = 0.0f;
+	[[maybe_unused]] float delta{};
 
 	long frame = 0;
 
@@ -285,7 +287,7 @@ int main() {
 
 	std::cout << "-- initializing finished" << std::endl;
 
-	while (!Window::isShouldClose()){
+	while (Window::isShouldClose() == false){
 		frame++;
 		float currentTime = glfwGetTime();
 		delta = currentTime - lastTime;

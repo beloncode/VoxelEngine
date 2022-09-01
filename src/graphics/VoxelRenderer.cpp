@@ -34,7 +34,7 @@
 				float u2 = u1 + uvsize;\
 				float v2 = v1 + uvsize;
 
-int chunk_attrs[] = {3,2,4, 0};
+constexpr int chunk_attrs[] = {3,2,4,0};
 
 VoxelRenderer::VoxelRenderer(size_t capacity) : capacity(capacity) {
 	buffer = new float[capacity * VERTEX_SIZE * 6];

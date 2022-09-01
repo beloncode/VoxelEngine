@@ -1,7 +1,6 @@
-#include "files.h"
+#include "Files.h"
 
 #include <fstream>
-#include <iostream>
 
 bool write_binary_file_part(std::string filename, const char* data, size_t offset, size_t size){
 	std::ofstream output(filename, std::ios::out | std::ios::binary | std::ios::in);

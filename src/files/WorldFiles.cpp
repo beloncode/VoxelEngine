@@ -1,6 +1,6 @@
 #include "WorldFiles.h"
 
-#include "files.h"
+#include "Files.h"
 #include "../window/Camera.h"
 #include "../objects/Player.h"
 #include "../physics/Hitbox.h"
@@ -13,9 +13,7 @@ union {
 
 #include <cassert>
 #include <iostream>
-#include <cstdint>
 #include <fstream>
-#include <iostream>
 
 #define SECTION_POSITION 1
 #define SECTION_ROTATION 2

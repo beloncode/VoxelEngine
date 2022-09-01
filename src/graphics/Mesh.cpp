@@ -18,7 +18,6 @@ Mesh::Mesh(const float* buffer, size_t vertices, const int* attrs) : vertices(ve
 		glBufferData(GL_ARRAY_BUFFER, 0, {}, GL_STATIC_DRAW);
 	}
 
-
 	// attributes
 	int offset = 0;
 	for (int i = 0; attrs[i]; i++){

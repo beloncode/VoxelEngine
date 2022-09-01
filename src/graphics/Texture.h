@@ -16,6 +16,6 @@ public:
 	void reload(unsigned char* data);
 };
 
-extern Texture* load_texture(std::string filename);
+extern Texture* load_texture(const std::string& filename);
 
 #endif /* GRAPHICS_TEXTURE_H_ */

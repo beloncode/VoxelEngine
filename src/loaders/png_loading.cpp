@@ -2,7 +2,8 @@
 
 #include <iostream>
 #include <GL/glew.h>
-#include "../graphics/Texture.h"
+
+#include "graphics/Texture.h"
 
 #ifndef _WIN32
 #define LIBPNG
@@ -11,7 +12,7 @@
 #ifdef LIBPNG
 #include <png.h>
 
-int _png_load(const char* file, int* width, int* height){
+static std::int32_t png_load(const char* file, int* width, int* height){
     FILE *f;
     int is_png, bit_depth, color_type, row_bytes;
     png_infop info_ptr, end_info;
@@ -31,23 +32,23 @@ int _png_load(const char* file, int* width, int* height){
         fclose( f );
         return 0;
     }
-    png_ptr = png_create_read_struct( PNG_LIBPNG_VER_STRING, NULL,
-        NULL, NULL );
+    png_ptr = png_create_read_struct( PNG_LIBPNG_VER_STRING, nullptr,
+        nullptr, nullptr );
     if ( !png_ptr ) {
         fclose( f );
         return 0;
     }
     info_ptr = png_create_info_struct( png_ptr );
     if ( !info_ptr ) {
-        png_destroy_read_struct( &png_ptr, (png_infopp) NULL,
-            (png_infopp) NULL );
+        png_destroy_read_struct( &png_ptr, (png_infopp) nullptr,
+            (png_infopp) nullptr );
         fclose( f );
         return 0;
     }
     end_info = png_create_info_struct( png_ptr );
     if ( !end_info ) {
-        png_destroy_read_struct( &png_ptr, (png_infopp) NULL,
-            (png_infopp) NULL );
+        png_destroy_read_struct( &png_ptr, (png_infopp) nullptr,
+            (png_infopp) nullptr );
         fclose( f );
         return 0;
     }
@@ -60,11 +61,11 @@ int _png_load(const char* file, int* width, int* height){
     png_set_sig_bytes( png_ptr, 8 );
     png_read_info( png_ptr, info_ptr );
     png_get_IHDR( png_ptr, info_ptr, &t_width, &t_height, &bit_depth,
-        &color_type, NULL, NULL, NULL );
-    *width = t_width;
-    *height = t_height;
+        &color_type, nullptr, nullptr, nullptr );
+    *width = static_cast<std::int32_t>(t_width);
+    *height = static_cast<std::int32_t>(t_height);
     png_read_update_info( png_ptr, info_ptr );
-    row_bytes = png_get_rowbytes( png_ptr, info_ptr );
+    row_bytes = static_cast<std::int32_t>(png_get_rowbytes( png_ptr, info_ptr ));
     image_data = (png_bytep) malloc( row_bytes * t_height * sizeof(png_byte) );
     if ( !image_data ) {
         png_destroy_read_struct( &png_ptr, &info_ptr, &end_info );
@@ -223,9 +224,9 @@ int _png_load(const char* file, int* pwidth, int* pheight){
 
 #endif
 
-Texture* load_texture(std::string filename){
+Texture* load_texture(const std::string& filename){
 	int width, height;
-	GLuint texture = _png_load(filename.c_str(), &width, &height);
+	GLuint texture = png_load(filename.c_str(), &width, &height);
 	if (texture == 0){
 		std::cerr << "Could not load texture " << filename << std::endl;
 		return nullptr;

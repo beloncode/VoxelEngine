@@ -1,14 +1,11 @@
-Debug/src/**/*.d
-Debug/src/**/*.o
-
-Debug/voxel_engine
+build
 
 world
 
 .vscode
+.idea
 
 .settings
 .cproject
 .project
-.idea
 
