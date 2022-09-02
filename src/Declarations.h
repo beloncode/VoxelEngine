@@ -33,7 +33,7 @@ bool loadTexture(Assets* assets, const std::string& filename, const std::string&
 	return true;
 }
 
-int initialize_assets(Assets* assets) {
+int initializeAssets(Assets* assets) {
 #define LOAD_SHADER(VERTEX, FRAGMENT, NAME) \
 	if (!loadShader(assets, VERTEX, FRAGMENT, NAME))\
 		return 1
@@ -51,7 +51,7 @@ int initialize_assets(Assets* assets) {
 
 
 // All in-game definitions (blocks, items, etc..)
-void setup_definitions() {
+void setupDefinitions() {
 	// AIR
 	auto* block = new Block(0,0);
 	block->drawGroup = 1;

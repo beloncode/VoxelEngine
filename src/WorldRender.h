@@ -52,7 +52,6 @@ void finalizeRenderer(){
 void drawChunk(size_t index, Camera* camera, Shader* shader, bool occlusion){
     Chunk* chunk = g_chunks->chunks[index];
 	Mesh* mesh = g_chunks->meshes[index];
-    assert(mesh != nullptr);
     if (mesh == nullptr)
 		return;
 
@@ -95,7 +94,7 @@ bool chunksComparator(size_t i, size_t j) {
 	return ((static_cast<float>(a->x) + 0.5f - g_camera_cx) * (static_cast<float>(a->x) + 0.5f - g_camera_cx) +
             (static_cast<float>(a->z) + 0.5f - g_camera_cz) * (static_cast<float>(a->z) + 0.5f - g_camera_cz) >
             (static_cast<float>(b->x) + 0.5f - g_camera_cx) * (static_cast<float>(b->x) + 0.5f - g_camera_cx) +
-        (static_cast<float>(b->z) + 0.5f - g_camera_cz) * (static_cast<float>(b->z) + 0.5f - g_camera_cz));
+            (static_cast<float>(b->z) + 0.5f - g_camera_cz) * (static_cast<float>(b->z) + 0.5f - g_camera_cz));
 }
 
 void drawWorld(Camera* camera, Assets* assets,

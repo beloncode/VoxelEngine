@@ -200,8 +200,8 @@ void WorldFiles::writePlayer(Player* player) const{
 	float2Bytes(position.z, dst, offset); offset += 4;
 
 	dst[offset++] = SECTION_ROTATION;
-	float2Bytes(player->camX, dst, offset); /*offset += 4; */
-	float2Bytes(player->camY, dst, offset); /*offset += 4; */
+	float2Bytes(player->camX, dst, offset); offset += 4;
+	float2Bytes(player->camY, dst, offset); offset += 4;
 
     WriteBinaryFile(getPlayerFile(), (const char *) dst, sizeof(dst));
 }
@@ -210,7 +210,7 @@ bool WorldFiles::readPlayer(Player* player) const {
 	size_t length = 0;
 	char* data = readBinaryFile(getPlayerFile(), length);
 	if (data == nullptr){
-		std::cerr << "could not to read player.bin" << std::endl;
+        std::fprintf(stderr, "Couldn't read Player configuration data (player.bin)\n");
 		return false;
 	}
 	glm::vec3 position = player->hitbox->position;

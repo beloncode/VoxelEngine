@@ -7,8 +7,6 @@
 #include "files/WorldFiles.h"
 #include "ChunksLoader.h"
 
-#include <iostream>
-
 #ifdef _WIN32
 #define _WIN32_WINNT 0x0501
 #include <mingw.thread.h>
@@ -17,7 +15,6 @@
 #endif
 
 #define MIN_SURROUNDING 9
-
 
 ChunksController::ChunksController(Chunks* chunks, Lighting* lighting) : m_chunks(chunks){
 	(void)lighting;
@@ -28,7 +25,7 @@ ChunksController::ChunksController(Chunks* chunks, Lighting* lighting) : m_chunk
 	for (int i = 0; i < m_loadersCount; i++){
         m_loaders[i] = new ChunksLoader();
 	}
-	std::cout << "created " << m_loadersCount << " m_loaders" << std::endl;
+	std::printf("Created {%d} loaders\n", m_loadersCount);
 }
 
 ChunksController::~ChunksController(){
@@ -50,9 +47,9 @@ bool ChunksController::loadVisible(WorldFiles* worldFiles){
 	const auto w = m_chunks->w;
 	const auto h = m_chunks->h;
 	const auto d = m_chunks->d;
-	int ox = m_chunks->ox;
-	int oy = m_chunks->oy;
-	int oz = m_chunks->oz;
+	const int ox = m_chunks->ox;
+	const int oy = m_chunks->oy;
+	const int oz = m_chunks->oz;
 	int nearX = 0;
 	int nearY = 0;
 	int nearZ = 0;

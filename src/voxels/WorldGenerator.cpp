@@ -14,9 +14,9 @@ public:
 		seed = (unsigned)time(nullptr);
 	}
 
-	std::uint32_t rand(){
+	auto rand(){
 		seed = (8253729 * seed + 2396403);
-	    return seed % 32768;
+	    return static_cast<std::int32_t>(seed % 32768);
 	}
 
 	void setSeed(int number){

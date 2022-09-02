@@ -9,7 +9,7 @@ public:
 	~Mesh();
 
 	void reload(const float* buffer, size_t vertices);
-	void draw(unsigned int primitive);
+	void draw(unsigned int primitive) const;
 private:
     unsigned int m_vao{};
     unsigned int m_vbo{};

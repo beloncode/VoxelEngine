@@ -30,6 +30,7 @@ void PhysicsSolver::step(Chunks* chunks, Hitbox* hitbox, float delta, unsigned s
 				for (std::int32_t z = floor(pos.z-half.z+E); z <= floor(pos.z+half.z-E); z++){
 					const std::int32_t x = floor(pos.x-half.x-E);
 					if (chunks->isObstacle(x, y, z)){
+                        vel.x *= .0f;
 						pos.x = static_cast<float>(x) + 1 + half.x + E;
 						break;
 					}
@@ -41,6 +42,7 @@ void PhysicsSolver::step(Chunks* chunks, Hitbox* hitbox, float delta, unsigned s
 				for (std::int32_t z = floor(pos.z-half.z+E); z <= floor(pos.z+half.z-E); z++){
 					const std::int32_t x = floor(pos.x+half.x+E);
 					if (chunks->isObstacle(x,y,z)){
+                        vel.x *= .0f;
 						pos.x = static_cast<float>(x) - half.x - E;
 						break;
 					}
@@ -53,6 +55,7 @@ void PhysicsSolver::step(Chunks* chunks, Hitbox* hitbox, float delta, unsigned s
 				for (std::int32_t x = floor(pos.x-half.x+E); x <= floor(pos.x+half.x-E); x++){
 					const std::int32_t z = floor(pos.z-half.z-E);
 					if (chunks->isObstacle(x,y,z)){
+                        vel.z *= .0f;
 						pos.z = static_cast<float>(z) + 1 + half.z + E;
 						break;
 					}
@@ -65,6 +68,7 @@ void PhysicsSolver::step(Chunks* chunks, Hitbox* hitbox, float delta, unsigned s
 				for (std::int32_t x = floor(pos.x-half.x+E); x <= floor(pos.x+half.x-E); x++){
 					std::int32_t z = floor(pos.z+half.z+E);
 					if (chunks->isObstacle(x, y, z)){
+                        vel.z *= .0f;
 						pos.z = static_cast<float>(z) - half.z - E;
 						break;
 					}
@@ -78,6 +82,7 @@ void PhysicsSolver::step(Chunks* chunks, Hitbox* hitbox, float delta, unsigned s
 				for (std::int32_t z = floor(pos.z-half.z+E); z <= floor(pos.z+half.z-E); z++){
 					const std::int32_t y = floor(pos.y-half.y-E);
 					if (chunks->isObstacle(x, y, z)){
+                        vel.y *= .0f;
 						pos.y = static_cast<float>(y) + 1 + half.y;
 						const float f = DEFAULT_FRICTION;
 						vel.x *= static_cast<float>(max(0.0, 1.0 - dt * f));
@@ -96,6 +101,7 @@ void PhysicsSolver::step(Chunks* chunks, Hitbox* hitbox, float delta, unsigned s
 				for (std::int32_t z = floor(pos.z-half.z+E); z <= floor(pos.z+half.z-E); z++){
 					std::int32_t y = floor(pos.y+half.y+E);
 					if (chunks->isObstacle(x, y, z)){
+                        vel.y *= .0f;
                         pos.y = static_cast<float>(y) - half.y - E;
 						break;
 					}

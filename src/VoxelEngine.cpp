@@ -204,7 +204,7 @@ static void updateControls(PhysicsSolver* physics,
 	}
 }
 
-void update_interaction(Chunks* chunks, [[maybe_unused]] PhysicsSolver* physics, Player* player, Lighting* lighting){
+void updateInteraction(Chunks* chunks, [[maybe_unused]] PhysicsSolver* physics, Player* player, Lighting* lighting){
 	Camera* camera = player->camera;
 	vec3 end;
 	vec3 norm;
@@ -241,32 +241,31 @@ int HEIGHT = 720;
 vec3 spawnpoint(-320, 255, 32);
 
 int main() {
-	setup_definitions();
+    setupDefinitions();
 
 	Window::initialize(WIDTH, HEIGHT, "VoxelEngine Part-11");
 	Events::initialize();
 
-	std::cout << "-- loading assets" << std::endl;
+    std::puts("Loading GAME Assets from 'res' folder...");
 	auto* assets = new Assets();
-	int result = initialize_assets(assets);
+	int result = initializeAssets(assets);
 	if (result){
 		delete assets;
 		Window::terminate();
 		return result;
 	}
-	std::cout << "-- loading world" << std::endl;
+    std::puts("Loading main world from 'world' folder");
 
 	auto *camera = new Camera(spawnpoint, radians(90.0f));
 	auto *wfile = new WorldFiles("world/", REGION_VOL * (CHUNK_VOL * 2 + 8));
 	auto *chunks = new Chunks(34,1,34, 0,0,0);
-
 
 	auto* player = new Player(vec3(camera->position), DEFAULT_PLAYER_SPEED, camera);
 	wfile->readPlayer(player);
 	camera->rotation = mat4(1.0f);
 	camera->rotate(player->camY, player->camX, 0);
 
-	std::cout << "-- preparing systems" << std::endl;
+    std::puts("Preparing main system (engine is started now)");
 
 	VoxelRenderer renderer(1024*1024);
 	PhysicsSolver physics(vec3(0,-GRAVITY,0));
@@ -285,7 +284,7 @@ int main() {
 
 	glfwSwapInterval(1);
 
-	std::cout << "-- initializing finished" << std::endl;
+    std::puts("Initialization completed (engine in loop)");
 
 	while (!Window::isShouldClose()){
 		frame++;
@@ -302,7 +301,7 @@ int main() {
 		}
 
         updateControls(&physics, chunks, player, static_cast<float>(delta));
-		update_interaction(chunks, &physics, player, &lighting);
+        updateInteraction(chunks, &physics, player, &lighting);
 
 		chunks->setCenter(wfile, static_cast<std::int32_t>(camera->position.x),0,static_cast<float>(camera->position.z));
         chunksController.buildMeshes(&renderer, static_cast<std::int32_t>(frame));
@@ -316,13 +315,13 @@ int main() {
 		Window::swapBuffers();
 		Events::pullEvents();
 	}
-	std::cout << "-- saving world" << std::endl;
+	std::puts("Saving world data");
 
 	wfile->writePlayer(player);
     writeWorld(wfile, chunks);
     closeWorld(wfile, chunks);
 
-	std::cout << "-- shutting down" << std::endl;
+    std::puts("Going out");
 
 	delete assets;
     finalizeRenderer();

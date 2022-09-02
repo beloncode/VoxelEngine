@@ -1,6 +1,5 @@
 #include "PNGLoading.h"
 
-#include <iostream>
 #include <GL/glew.h>
 
 #include "graphics/Texture.h"
@@ -231,7 +230,7 @@ Texture* loadTexture(const std::string& filename){
 	int width, height;
 	GLuint texture = pngLoad(filename.c_str(), &width, &height);
 	if (texture == 0){
-		std::cerr << "Could not load texture " << filename << std::endl;
+		std::fprintf(stderr, "Could not load texture %s\n", filename.c_str());
 		return nullptr;
 	}
 	return new Texture(texture, width, height);

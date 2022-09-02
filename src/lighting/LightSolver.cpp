@@ -26,7 +26,7 @@ void LightSolver::add(int x, int y, int z, int emission) {
 }
 
 void LightSolver::add(int x, int y, int z) {
-	assert (m_chunks != nullptr);
+	// assert(m_chunks != nullptr);
 	add(x, y, z, m_chunks->getLight(x, y, z, m_channel));
 }
 

@@ -39,12 +39,12 @@ Mesh::~Mesh(){
 void Mesh::reload(const float* buffer, size_t vertices){
 	glBindVertexArray(m_vao);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_vertexSize * vertices, buffer, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(float) * m_vertexSize * vertices), buffer, GL_STATIC_DRAW);
 	this->m_vertices = vertices;
 }
 
-void Mesh::draw(unsigned int primitive){
+void Mesh::draw(unsigned int primitive) const{
 	glBindVertexArray(m_vao);
-	glDrawArrays(primitive, 0, m_vertices);
+	glDrawArrays(primitive, 0, static_cast<GLsizei>(m_vertices));
 	glBindVertexArray(0);
 }
