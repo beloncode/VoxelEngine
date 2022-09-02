@@ -3,7 +3,12 @@
 [EXE for windows](https://drive.google.com/file/d/1lkFc5nyYOs0Yyu1wmOoAAwEp4r9jO1tE/view?usp=sharing)<br>
 [MinGW libraries (include & lib) + glew32.dll](https://drive.google.com/file/d/1k1Hnbz2Uhr4-03upt2yHxKws396HQDra/view?usp=sharing)
 
+## Screenshots
+
+![Image](screen/screenshot.png)
+
 ## How to build and run in linux
+
 ~~~bash
 $ cd VoxelEngine
 $ mkdir build
