@@ -1,5 +1,5 @@
-#ifndef PHYSICS_HITBOX_H_
-#define PHYSICS_HITBOX_H_
+#ifndef PHYSICS_HITBOX_H
+#define PHYSICS_HITBOX_H
 
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
@@ -18,4 +18,4 @@ public:
 	Hitbox(vec3 position, vec3 halfsize);
 };
 
-#endif /* PHYSICS_HITBOX_H_ */
+#endif /* PHYSICS_HITBOX_H */

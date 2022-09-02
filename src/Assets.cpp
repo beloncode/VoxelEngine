@@ -4,28 +4,28 @@
 #include "graphics/Shader.h"
 
 Assets::~Assets() {
-	for (auto& iter : shaders){
+	for (auto& iter : m_shaders){
 		delete iter.second;
 	}
 
-	for (auto& iter : textures){
+	for (auto& iter : m_textures){
 		delete iter.second;
 	}
 }
 
-Texture* Assets::getTexture(std::string name){
-	return textures[name];
+Texture* Assets::getTexture(const std::string& name){
+	return m_textures[name];
 }
 
-void Assets::store(Texture* texture, std::string name){
-	textures[name] = texture;
+void Assets::store(Texture* texture, const std::string& name){
+    m_textures[name] = texture;
 }
 
 
-Shader* Assets::getShader(std::string name){
-	return shaders[name];
+Shader* Assets::getShader(const std::string& name){
+	return m_shaders[name];
 }
 
-void Assets::store(Shader* shader, std::string name){
-	shaders[name] = shader;
+void Assets::store(Shader* shader, const std::string& name){
+    m_shaders[name] = shader;
 }

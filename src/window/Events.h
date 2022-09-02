@@ -1,5 +1,5 @@
-#ifndef WINDOW_EVENTS_H_
-#define WINDOW_EVENTS_H_
+#ifndef WINDOW_EVENTS_H
+#define WINDOW_EVENTS_H
 
 #include "Window.h"
 
@@ -7,15 +7,15 @@ typedef unsigned int uint;
 
 class Events {
 public:
-	static bool* _keys;
-	static uint* _frames;
-	static uint _current;
+	static bool* keys;
+	static uint* frames;
+	static uint current;
 	static float deltaX;
 	static float deltaY;
 	static float x;
 	static float y;
-	static bool _cursor_locked;
-	static bool _cursor_started;
+	static bool cursor_locked;
+	static bool cursor_started;
 
 	static int initialize();
 	static void finalize();
@@ -24,10 +24,10 @@ public:
 	static bool pressed(int keycode);
 	static bool jpressed(int keycode);
 
-	static bool clicked(int button);
+    [[maybe_unused]] static bool clicked(int button);
 	static bool jclicked(int button);
 
-	static void toogleCursor();
+	static void toggleCursor();
 };
 
-#endif /* WINDOW_EVENTS_H_ */
+#endif /* WINDOW_EVENTS_H */

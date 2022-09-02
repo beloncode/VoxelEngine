@@ -16,38 +16,36 @@ Shader::~Shader(){
 	glDeleteProgram(id);
 }
 
-void Shader::use(){
+[[maybe_unused]] void Shader::use() const {
 	glUseProgram(id);
 }
 
-void Shader::uniformMatrix(std::string name, glm::mat4 matrix){
-	GLuint transformLoc = glGetUniformLocation(id, name.c_str());
-	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(matrix));
+void Shader::uniformMatrix(const std::string& name, glm::mat4 matrix) const{
+	const GLuint transformLoc = glGetUniformLocation(id, name.c_str());
+	glUniformMatrix4fv(static_cast<GLint>(transformLoc), 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
-void Shader::uniform1i(std::string name, int x){
-	GLuint transformLoc = glGetUniformLocation(id, name.c_str());
-	glUniform1i(transformLoc, x);
+[[maybe_unused]] void Shader::uniform1i(const std::string& name, int x) const{
+	const GLuint transformLoc = glGetUniformLocation(id, name.c_str());
+	glUniform1i(static_cast<GLint>(transformLoc), x);
 }
 
-void Shader::uniform1f(std::string name, float x){
-	GLuint transformLoc = glGetUniformLocation(id, name.c_str());
-	glUniform1f(transformLoc, x);
+void Shader::uniform1f(const std::string& name, float x) const{
+	const GLuint transformLoc = glGetUniformLocation(id, name.c_str());
+	glUniform1f(static_cast<GLint>(transformLoc), x);
 }
 
-void Shader::uniform2f(std::string name, float x, float y){
-	GLuint transformLoc = glGetUniformLocation(id, name.c_str());
-	glUniform2f(transformLoc, x, y);
+[[maybe_unused]] void Shader::uniform2f(const std::string& name, float x, float y) const{
+	const GLuint transformLoc = glGetUniformLocation(id, name.c_str());
+	glUniform2f(static_cast<GLint>(transformLoc), x, y);
 }
 
-void Shader::uniform3f(std::string name, float x, float y, float z){
-	GLuint transformLoc = glGetUniformLocation(id, name.c_str());
-	glUniform3f(transformLoc, x,y,z);
+void Shader::uniform3f(const std::string& name, float x, float y, float z) const{
+	const GLuint transformLoc = glGetUniformLocation(id, name.c_str());
+	glUniform3f(static_cast<GLint>(transformLoc), x,y,z);
 }
 
-
-
-Shader* load_shader(std::string vertexFile, std::string fragmentFile) {
+Shader* load_shader(const std::string& vertexFile, const std::string& fragmentFile) {
 	// Reading Files
 	std::string vertexCode;
 	std::string fragmentCode;
@@ -71,7 +69,7 @@ Shader* load_shader(std::string vertexFile, std::string fragmentFile) {
 		fragmentCode = fShaderStream.str();
 	}
 	catch(std::ifstream::failure& e) {
-		std::cerr << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
+		std::cerr << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ" << std::endl;
 		return nullptr;
 	}
 	const GLchar* vShaderCode = vertexCode.c_str();

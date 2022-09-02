@@ -1,5 +1,5 @@
-#ifndef WINDOW_WINDOW_H_
-#define WINDOW_WINDOW_H_
+#ifndef WINDOW_WINDOW_H
+#define WINDOW_WINDOW_H
 
 class GLFWwindow;
 
@@ -8,7 +8,7 @@ public:
 	static int width;
 	static int height;
 	static GLFWwindow* window; // не лучшее решение делать window публичным
-	static int initialize(int width, int height, const char* title);
+	static int initialize(int widthLocal, int heightLocal, const char* title);
 	static void terminate();
 
 	static void setCursorMode(int mode);
@@ -17,4 +17,4 @@ public:
 	static void swapBuffers();
 };
 
-#endif /* WINDOW_WINDOW_H_ */
+#endif /* WINDOW_WINDOW_H */

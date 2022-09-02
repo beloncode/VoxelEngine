@@ -1,49 +1,57 @@
 #include "Lighting.h"
 #include "LightSolver.h"
 #include "Lightmap.h"
-#include "../voxels/Chunks.h"
-#include "../voxels/voxel.h"
-#include "../voxels/Block.h"
+#include "voxels/Chunks.h"
+#include "voxels/Voxel.h"
+#include "voxels/Block.h"
 
 Lighting::Lighting(Chunks* chunks){
 	this->chunks = chunks;
-	solverR = new LightSolver(chunks, 0);
-	solverG = new LightSolver(chunks, 1);
-	solverB = new LightSolver(chunks, 2);
-	solverS = new LightSolver(chunks, 3);
+    /*
+	solverR = new LightSolver(m_chunks, 0);
+	solverG = new LightSolver(m_chunks, 1);
+	solverB = new LightSolver(m_chunks, 2);
+	solverS = new LightSolver(m_chunks, 3);
+    */
+    solverR = std::make_shared<LightSolver>(chunks, 0);
+    solverG = std::make_shared<LightSolver>(chunks, 1);
+    solverB = std::make_shared<LightSolver>(chunks, 2);
+    solverS = std::make_shared<LightSolver>(chunks, 3);
 }
-
+/*
 Lighting::~Lighting(){
+
 	delete solverR;
 	delete solverG;
 	delete solverB;
 	delete solverS;
 }
+ */
 
-void Lighting::clear(){
-	for (unsigned int index = 0; index < chunks->volume; index++){
+[[maybe_unused]] void Lighting::clear(){
+	for (std::uint32_t index = 0; index < chunks->volume; index++){
 		Chunk* chunk = chunks->chunks[index];
 		if (chunk == nullptr)
 			continue;
 		Lightmap* lightmap = chunk->lightmap;
-		for (int i = 0; i < CHUNK_VOL; i++){
+		for (std::int32_t i = 0; i < CHUNK_VOL; i++){
 			lightmap->map[i] = 0;
 		}
 	}
 }
 
-void Lighting::onChunkLoaded(int cx, int cy, int cz, bool sky){
+void Lighting::onChunkLoaded(std::int32_t cx, std::int32_t cy, std::int32_t cz, bool sky){
 	Chunk* chunk = chunks->getChunk(cx, cy, cz);
 	Chunk* chunkUpper = chunks->getChunk(cx, cy+1, cz);
 	Chunk* chunkLower = chunks->getChunk(cx, cy-1, cz);
 	if (chunkLower && sky){
-		for (int z = 0; z < CHUNK_D; z++){
-			for (int x = 0; x < CHUNK_W; x++){
-				int gx = x + cx * CHUNK_W;
-				int gz = z + cz * CHUNK_D;
+		for (std::int32_t z = 0; z < CHUNK_D; z++){
+			for (std::int32_t x = 0; x < CHUNK_W; x++){
+				const std::int32_t gx = x + cx * CHUNK_W;
+				const std::int32_t gz = z + cz * CHUNK_D;
 
-				int light = chunk->lightmap->getS(x,0,z);
-				int ncy = cy-1;
+				const std::int32_t light = chunk->lightmap->getS(x,0,z);
+                std::int32_t ncy = cy-1;
 				if (light < 15){
 					Chunk* current = chunkLower;
 					if (chunkLower->lightmap->getS(x,15,z) == 0)
@@ -57,7 +65,7 @@ void Lighting::onChunkLoaded(int cx, int cy, int cz, bool sky){
 							current = chunks->getChunk(cx,ncy,cz);
 						if (!current)
 							break;
-						voxel* vox = &(current->voxels[(y * CHUNK_D + z) * CHUNK_W + x]);//chunks->get(gx,gy+y,gz);
+						voxel* vox = &(current->voxels[(y * CHUNK_D + z) * CHUNK_W + x]);//m_chunks->get(gx,gy+y,gz);
 						Block* block = Block::blocks[vox->id];
 						if (!block->skyLightPassing)
 							break;
@@ -71,14 +79,14 @@ void Lighting::onChunkLoaded(int cx, int cy, int cz, bool sky){
 		}
 	}
 	if (chunkUpper && sky){
-		for (int z = 0; z < CHUNK_D; z++){
-			for (int x = 0; x < CHUNK_W; x++){
-				int gx = x + cx * CHUNK_W;
-				int gy = cy * CHUNK_H;
-				int gz = z + cz * CHUNK_D;
-				int ncy = cy;
+		for (std::int32_t z = 0; z < CHUNK_D; z++){
+			for (std::int32_t x = 0; x < CHUNK_W; x++){
+				const std::int32_t gx = x + cx * CHUNK_W;
+				const std::int32_t gy = cy * CHUNK_H;
+				const std::int32_t gz = z + cz * CHUNK_D;
+                std::int32_t ncy = cy;
 
-				int light = chunkUpper->lightmap->getS(x,0,z);
+				const std::int32_t light = chunkUpper->lightmap->getS(x,0,z);
 
 				Chunk* current = chunk;
 				if (light == 15){
@@ -91,7 +99,7 @@ void Lighting::onChunkLoaded(int cx, int cy, int cz, bool sky){
 							current = chunks->getChunk(cx,ncy,cz);
 						if (!current)
 							break;
-						voxel* vox = &(current->voxels[(y * CHUNK_D + z) * CHUNK_W + x]);//chunks->get(gx,gy+y,gz);
+						const voxel* vox = &(current->voxels[(y * CHUNK_D + z) * CHUNK_W + x]);//m_chunks->get(gx,gy+y,gz);
 						Block* block = Block::blocks[vox->id];
 						if (!block->skyLightPassing)
 							break;
@@ -105,14 +113,14 @@ void Lighting::onChunkLoaded(int cx, int cy, int cz, bool sky){
 			}
 		}
 	} else if (sky){
-		for (int z = 0; z < CHUNK_D; z++){
-			for (int x = 0; x < CHUNK_W; x++){
-				int gx = x + cx * CHUNK_W;
-				int gz = z + cz * CHUNK_D;
-				int ncy = cy;
+		for (std::int32_t z = 0; z < CHUNK_D; z++){
+			for (std::int32_t x = 0; x < CHUNK_W; x++){
+				const std::int32_t gx = x + cx * CHUNK_W;
+				const std::int32_t gz = z + cz * CHUNK_D;
+				std::int32_t ncy = cy;
 
 				Chunk* current = chunk;
-				for (int y = CHUNK_H-1;;y--){
+				for (std::int32_t y = CHUNK_H-1;;y--){
 					if (y < 0){
 						ncy--;
 						y += CHUNK_H;
@@ -121,7 +129,7 @@ void Lighting::onChunkLoaded(int cx, int cy, int cz, bool sky){
 						current = chunks->getChunk(cx,ncy,cz);
 					if (!current)
 						break;
-					voxel* vox = &(current->voxels[(y * CHUNK_D + z) * CHUNK_W + x]);//chunks->get(gx,gy+y,gz);
+					voxel* vox = &(current->voxels[(y * CHUNK_D + z) * CHUNK_W + x]);//m_chunks->get(gx,gy+y,gz);
 					Block* block = Block::blocks[vox->id];
 					if (!block->skyLightPassing)
 						break;
@@ -133,15 +141,15 @@ void Lighting::onChunkLoaded(int cx, int cy, int cz, bool sky){
 		}
 	}
 	//std::cout << "DONE" << std::endl;
-	for (unsigned int y = 0; y < CHUNK_H; y++){
-		for (unsigned int z = 0; z < CHUNK_D; z++){
-			for (unsigned int x = 0; x < CHUNK_W; x++){
+	for (std::int32_t y = 0; y < CHUNK_H; y++){
+		for (std::int32_t z = 0; z < CHUNK_D; z++){
+			for (std::int32_t x = 0; x < CHUNK_W; x++){
 				voxel vox = chunk->voxels[(y * CHUNK_D + z) * CHUNK_W + x];
 				Block* block = Block::blocks[vox.id];
 				if (block->emission[0] || block->emission[1] || block->emission[2]){
-					int gx = x + cx * CHUNK_W;
-					int gy = y + cy * CHUNK_H;
-					int gz = z + cz * CHUNK_D;
+					const std::int32_t gx = x + cx * CHUNK_W;
+					const std::int32_t gy = y + cy * CHUNK_H;
+					const std::int32_t gz = z + cz * CHUNK_D;
 					solverR->add(gx,gy,gz,block->emission[0]);
 					solverG->add(gx,gy,gz,block->emission[1]);
 					solverB->add(gx,gy,gz,block->emission[2]);
@@ -149,14 +157,14 @@ void Lighting::onChunkLoaded(int cx, int cy, int cz, bool sky){
 			}
 		}
 	}
-	for (int y = -1; y <= CHUNK_H; y++){
-		for (int z = -1; z <= CHUNK_D; z++){
-			for (int x = -1; x <= CHUNK_W; x++){
+	for (std::int32_t y = -1; y <= CHUNK_H; y++){
+		for (std::int32_t z = -1; z <= CHUNK_D; z++){
+			for (std::int32_t x = -1; x <= CHUNK_W; x++){
 				if (!(x == -1 || x == CHUNK_W || y == -1 || y == CHUNK_H || z == -1 || z == CHUNK_D))
 					continue;
-				int gx = x + cx * CHUNK_W;
-				int gy = y + cy * CHUNK_H;
-				int gz = z + cz * CHUNK_D;
+				const std::int32_t gx = x + cx * CHUNK_W;
+				const std::int32_t gy = y + cy * CHUNK_H;
+				const std::int32_t gz = z + cz * CHUNK_D;
 				if (chunks->getLight(x,y,z)){
 					solverR->add(gx,gy,gz);
 					solverG->add(gx,gy,gz);
@@ -173,13 +181,32 @@ void Lighting::onChunkLoaded(int cx, int cy, int cz, bool sky){
 	solverB->solve();
 	solverS->solve();
 
-	Chunk* other;
-	other = chunks->getChunk(cx-1,cy,cz); if (other) other->modified = true;
-	other = chunks->getChunk(cx+1,cy,cz); if (other) other->modified = true;
-	other = chunks->getChunk(cx,cy-1,cz); if (other) other->modified = true;
-	other = chunks->getChunk(cx,cy+1,cz); if (other) other->modified = true;
-	other = chunks->getChunk(cx,cy,cz-1); if (other) other->modified = true;
-	other = chunks->getChunk(cx,cy,cz+1); if (other) other->modified = true;
+	/* Chunk* other; */
+
+    static const std::int32_t updateIndexes[][3] ={
+            {-1,+0,+0},
+            {+1,+0,+0},
+            {+0,-1,+0},
+            {+0,+1,+0},
+            {+0,+0,-1},
+            {+0,+0,+1}
+    };
+
+    for (auto const updateIndex : updateIndexes){
+        const auto other = chunks->getChunk(cx + updateIndex[0], cy + updateIndex[1], updateIndex[2]);
+        if (other != nullptr){
+            other->modified = true;
+        }
+
+    }
+    /*
+	other = m_chunks->getChunk(cx-1,cy,cz); if (other) other->modified = true;
+	other = m_chunks->getChunk(cx+1,cy,cz); if (other) other->modified = true;
+	other = m_chunks->getChunk(cx,cy-1,cz); if (other) other->modified = true;
+	other = m_chunks->getChunk(cx,cy+1,cz); if (other) other->modified = true;
+	other = m_chunks->getChunk(cx,cy,cz-1); if (other) other->modified = true;
+	other = m_chunks->getChunk(cx,cy,cz+1); if (other) other->modified = true;
+     */
 }
 
 void Lighting::onBlockSet(int x, int y, int z, int id){

@@ -5,19 +5,19 @@
  *      Author: MihailRis
  */
 
-#ifndef WINDOW_CAMERA_H_
-#define WINDOW_CAMERA_H_
+#ifndef WINDOW_CAMERA_H
+#define WINDOW_CAMERA_H
 
 #include <glm/glm.hpp>
+
 using namespace glm;
 
 class Camera {
-	void updateVectors();
 public:
-	vec3 front;
-	vec3 up;
-	vec3 right;
-	vec3 dir;
+	vec3 front{};
+	vec3 up{};
+	vec3 right{};
+	vec3 dir{};
 
 	vec3 position;
 	float fov;
@@ -27,8 +27,11 @@ public:
 
 	void rotate(float x, float y, float z);
 
-	mat4 getProjection();
-	mat4 getView();
+	[[nodiscard]] mat4 getProjection() const;
+	[[nodiscard]] mat4 getView() const;
+private:
+    void updateVectors();
+
 };
 
-#endif /* WINDOW_CAMERA_H_ */
+#endif /* WINDOW_CAMERA_H */

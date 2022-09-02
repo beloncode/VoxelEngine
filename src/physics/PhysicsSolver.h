@@ -1,5 +1,5 @@
-#ifndef PHYSICS_PHYSICSSOLVER_H_
-#define PHYSICS_PHYSICSSOLVER_H_
+#ifndef PHYSICS_PHYSICSSOLVER_H
+#define PHYSICS_PHYSICSSOLVER_H
 
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
@@ -11,11 +11,12 @@ class Hitbox;
 class Chunks;
 
 class PhysicsSolver {
-	vec3 gravity;
 public:
-	PhysicsSolver(vec3 gravity);
-	void step(Chunks* chunks, Hitbox* hitbox, float delta, unsigned substeps, bool shifting, float gravityScale);
-	bool isBlockInside(int x, int y, int z, Hitbox* hitbox);
+	explicit PhysicsSolver(vec3 gravity);
+	void step(Chunks* chunks, Hitbox* hitbox, float delta, unsigned substeps, bool shifting, float gravityScale) const;
+	static bool isBlockInside(int x, int y, int z, Hitbox* hitbox);
+private:
+    vec3 m_gravity;
 };
 
-#endif /* PHYSICS_PHYSICSSOLVER_H_ */
+#endif /* PHYSICS_PHYSICSSOLVER_H */

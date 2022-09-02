@@ -3,6 +3,10 @@ project(VoxelEngine)
 
 set(CMAKE_CXX_STANDARD 17)
 
+#if(CMAKE_CXX_COMPILER_ID STREQUAL Clang)
+#    set(CMAKE_CXX_FLAGS -fsanitize=address)
+#endif()
+
 include_directories(${CMAKE_SOURCE_DIR}/src)
 
 include(FindGLEW)
@@ -36,8 +40,8 @@ add_executable(VoxelEngine
         src/lighting/Lightmap.h
         src/lighting/LightSolver.cpp
         src/lighting/LightSolver.h
-        src/loaders/png_loading.cpp
-        src/loaders/png_loading.h
+        src/loaders/PNGLoading.cpp
+        src/loaders/PNGLoading.h
         src/maths/FastNoiseLite.h
         src/objects/Player.cpp
         src/objects/Player.h
@@ -55,8 +59,8 @@ add_executable(VoxelEngine
         src/voxels/ChunksController.h
         src/voxels/ChunksLoader.cpp
         src/voxels/ChunksLoader.h
-        src/voxels/voxel.cpp
-        src/voxels/voxel.h
+        src/voxels/Voxel.cpp
+        src/voxels/Voxel.h
         src/voxels/WorldGenerator.cpp
         src/voxels/WorldGenerator.h
         src/window/Camera.cpp
@@ -67,9 +71,9 @@ add_executable(VoxelEngine
         src/window/Window.h
         src/Assets.cpp
         src/Assets.h
-        src/declarations.h
-        src/voxel_engine.cpp
-        src/world_render.h)
+        src/Declarations.h
+        src/VoxelEngine.cpp
+        src/WorldRender.h)
 
 target_link_libraries(VoxelEngine GLEW::glew OpenGL::GL stdc++fs Threads::Threads PNG::PNG GLEW::glew glfw)
 

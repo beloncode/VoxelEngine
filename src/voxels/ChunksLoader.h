@@ -34,7 +34,7 @@ public:
 
 	void perform(Chunk* chunk, Chunk** closes_passed);
 
-	void stop(){
+    [[maybe_unused]] void stop(){
 		working = false;
 	}
 };

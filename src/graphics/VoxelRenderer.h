@@ -1,19 +1,20 @@
-#ifndef GRAPHICS_VOXELRENDERER_H_
-#define GRAPHICS_VOXELRENDERER_H_
+#ifndef GRAPHICS_VOXELRENDERER_H
+#define GRAPHICS_VOXELRENDERER_H
 
-#include <stdlib.h>
+#include <cstdlib>
 
 class Mesh;
 class Chunk;
 
 class VoxelRenderer {
-	float* buffer;
-	size_t capacity;
 public:
-	VoxelRenderer(size_t capacity);
+	explicit VoxelRenderer(size_t capacity);
 	~VoxelRenderer();
 
 	Mesh* render(Chunk* chunk, const Chunk** chunks);
+private:
+    float* m_buffer;
+    size_t m_capacity;
 };
 
-#endif /* GRAPHICS_VOXELRENDERER_H_ */
+#endif /* GRAPHICS_VOXELRENDERER_H */

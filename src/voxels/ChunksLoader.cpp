@@ -4,11 +4,11 @@
 #include "Chunk.h"
 #include "Chunks.h"
 #include "WorldGenerator.h"
-#include "../lighting/Lighting.h"
+#include "lighting/Lighting.h"
 
 #include <iostream>
 
-#define CLOSES_C 27
+constexpr std::uint8_t CLOSES_C = 27;
 
 void ChunksLoader::_thread(){
 	Chunks chunks(3,3,3, -1,-1,-1);
@@ -19,7 +19,7 @@ void ChunksLoader::_thread(){
 			continue;
 		}
 		Chunk* chunk = current;
-		chunks._setOffset(chunk->x-1, chunk->y-1, chunk->z-1);
+        chunks.setOffset(chunk->x - 1, chunk->y - 1, chunk->z - 1);
 		for (size_t i = 0; i < CLOSES_C; i++){
 			Chunk* other = closes[i];
 			if (other){

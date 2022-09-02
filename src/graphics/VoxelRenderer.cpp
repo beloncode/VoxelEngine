@@ -1,9 +1,9 @@
 #include "VoxelRenderer.h"
 #include "Mesh.h"
-#include "../voxels/Chunk.h"
-#include "../voxels/voxel.h"
-#include "../voxels/Block.h"
-#include "../lighting/Lightmap.h"
+#include "voxels/Chunk.h"
+#include "voxels/Voxel.h"
+#include "voxels/Block.h"
+#include "lighting/Lightmap.h"
 
 #define VERTEX_SIZE (3 + 2 + 4)
 
@@ -26,25 +26,25 @@
 								  buffer[INDEX+6] = (G);\
 								  buffer[INDEX+7] = (B);\
 								  buffer[INDEX+8] = (S);\
-								  INDEX += VERTEX_SIZE;
+								  INDEX += VERTEX_SIZE
 
 
-#define SETUP_UV(INDEX) float u1 = ((INDEX) % 16) * uvsize;\
-				float v1 = 1-((1 + (INDEX) / 16) * uvsize);\
-				float u2 = u1 + uvsize;\
-				float v2 = v1 + uvsize;
+#define SETUP_UV(INDEX) float u1 = ((INDEX) % 16) * uv_size;\
+				float v1 = 1-((1 + (INDEX) / 16) * uv_size);\
+				float u2 = u1 + uv_size;\
+				float v2 = v1 + uv_size
 
 constexpr int chunk_attrs[] = {3,2,4,0};
 
-VoxelRenderer::VoxelRenderer(size_t capacity) : capacity(capacity) {
-	buffer = new float[capacity * VERTEX_SIZE * 6];
+VoxelRenderer::VoxelRenderer(size_t capacity) : m_capacity(capacity) {
+    m_buffer = new float[capacity * VERTEX_SIZE * 6];
 }
 
 VoxelRenderer::~VoxelRenderer(){
-	delete[] buffer;
+	delete[] m_buffer;
 }
 
-inline void _renderBlock(float* buffer, int x, int y, int z, const Chunk** chunks, voxel vox, size_t& index){
+static inline void renderBlock(float* buffer, int x, int y, int z, const Chunk** chunks, voxel vox, size_t& index){
 	unsigned int id = vox.id;
 
 	if (!id){
@@ -52,9 +52,9 @@ inline void _renderBlock(float* buffer, int x, int y, int z, const Chunk** chunk
 	}
 
 	float l;
-	float uvsize = 1.0f/16.0f;
+	constexpr float uv_size = 1.0f / 16.0f;
 
-	Block* block = Block::blocks[id];
+	const Block* block = Block::blocks[id];
 	unsigned char group = block->drawGroup;
 
 	if (!IS_BLOCKED(x,y+1,z,group)){
@@ -62,9 +62,9 @@ inline void _renderBlock(float* buffer, int x, int y, int z, const Chunk** chunk
 
 		SETUP_UV(block->textureFaces[3]);
 
-		float lr = LIGHT(x,y+1,z, 0) / 15.0f;
-		float lg = LIGHT(x,y+1,z, 1) / 15.0f;
-		float lb = LIGHT(x,y+1,z, 2) / 15.0f;
+        float lr = LIGHT(x,y+1,z, 0) / 15.0f;
+        float lg = LIGHT(x,y+1,z, 1) / 15.0f;
+        float lb = LIGHT(x,y+1,z, 2) / 15.0f;
 		float ls = LIGHT(x,y+1,z, 3) / 15.0f;
 
 		float lr0 = (LIGHT(x-1,y+1,z,0) + lr*30 + LIGHT(x-1,y+1,z-1,0) + LIGHT(x,y+1,z-1,0)) / 5.0f / 15.0f;
@@ -297,7 +297,7 @@ Mesh* VoxelRenderer::render(Chunk* chunk, const Chunk** chunks){
 				voxel vox = chunk->voxels[(y * CHUNK_D + z) * CHUNK_W + x];
 				if (vox.id == 9 || vox.id == 4)
 					continue;
-				_renderBlock(buffer, x, y, z, chunks, vox, index);
+				renderBlock(m_buffer, x, y, z, chunks, vox, index);
 			}
 		}
 	}
@@ -308,7 +308,7 @@ Mesh* VoxelRenderer::render(Chunk* chunk, const Chunk** chunks){
 				voxel vox = chunk->voxels[(y * CHUNK_D + z) * CHUNK_W + x];
 				if (vox.id != 9)
 					continue;
-				_renderBlock(buffer, x, y, z, chunks, vox, index);
+				renderBlock(m_buffer, x, y, z, chunks, vox, index);
 			}
 		}
 	}
@@ -319,9 +319,9 @@ Mesh* VoxelRenderer::render(Chunk* chunk, const Chunk** chunks){
 				voxel vox = chunk->voxels[(y * CHUNK_D + z) * CHUNK_W + x];
 				if (vox.id != 4)
 					continue;
-				_renderBlock(buffer, x, y, z, chunks, vox, index);
+				renderBlock(m_buffer, x, y, z, chunks, vox, index);
 			}
 		}
 	}
-	return new Mesh(buffer, index / VERTEX_SIZE, chunk_attrs);
+	return new Mesh(m_buffer, index / VERTEX_SIZE, chunk_attrs);
 }

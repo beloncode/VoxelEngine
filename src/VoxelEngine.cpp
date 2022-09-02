@@ -3,7 +3,6 @@
 #include <iostream>
 #include <cmath>
 
-#define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -15,11 +14,10 @@
 using namespace glm;
 
 #include "graphics/VoxelRenderer.h"
-#include "graphics/LineBatch.h"
 #include "window/Window.h"
 #include "window/Events.h"
 #include "window/Camera.h"
-#include "voxels/voxel.h"
+#include "voxels/Voxel.h"
 #include "voxels/Chunk.h"
 #include "voxels/Chunks.h"
 #include "voxels/ChunksController.h"
@@ -33,12 +31,15 @@ using namespace glm;
 #include "Assets.h"
 #include "objects/Player.h"
 
-#include "declarations.h"
-#include "world_render.h"
+#include "Declarations.h"
+#include "WorldRender.h"
 
+float g_camera_cx;
+float g_camera_cz;
+Chunks* g_chunks;
 
 // Save all world data to files
-void write_world(WorldFiles* wfile, Chunks* chunks){
+static void writeWorld(WorldFiles* wfile, Chunks* chunks){
 	for (unsigned int i = 0; i < chunks->volume; i++){
 		Chunk* chunk = chunks->chunks[i];
 		if (chunk == nullptr)
@@ -50,13 +51,13 @@ void write_world(WorldFiles* wfile, Chunks* chunks){
 }
 
 // Deleting world data from memory
-void close_world(WorldFiles* wfile, Chunks* chunks){
+static void closeWorld(WorldFiles* wfile, Chunks* chunks){
 	delete chunks;
 	delete wfile;
 }
 
 #define CROUCH_SPEED_MUL 0.25f
-#define CROUCH_SHIFT_Y -0.2f
+#define CROUCH_SHIFT_Y (-0.2f)
 #define RUN_SPEED_MUL 1.5f
 #define CROUCH_ZOOM 0.9f
 #define RUN_ZOOM 1.1f
@@ -71,18 +72,18 @@ void close_world(WorldFiles* wfile, Chunks* chunks){
 #define FLIGHT_SPEED_MUL 5.0f
 #define JUMP_FORCE 7.0f
 
-void update_controls(PhysicsSolver* physics,
-		Chunks* chunks,
-		Player* player,
-		float delta){
+static void updateControls(PhysicsSolver* physics,
+                    Chunks* chunks,
+                    Player* player,
+                    float delta){
 
 	if (Events::jpressed(GLFW_KEY_TAB)){
-		Events::toogleCursor();
+        Events::toggleCursor();
 	}
 
 	for (int i = 1; i < 10; i++){
 		if (Events::jpressed(GLFW_KEY_0+i)){
-			player->choosenBlock = i;
+			player->chBlock = i;
 		}
 	}
 
@@ -187,9 +188,9 @@ void update_controls(PhysicsSolver* physics,
 		hitbox->velocity.z += dir.z * speed * delta * 9;
 	}
 
-	if (Events::_cursor_locked){
-		player->camY += -Events::deltaY / Window::height * 2;
-		player->camX += -Events::deltaX / Window::height * 2;
+	if (Events::cursor_locked){
+		player->camY += -Events::deltaY / static_cast<float>(Window::height) * 2;
+		player->camX += -Events::deltaX / static_cast<float>(Window::height) * 2;
 
 		if (player->camY < -radians(89.0f)){
 			player->camY = -radians(89.0f);
@@ -203,7 +204,7 @@ void update_controls(PhysicsSolver* physics,
 	}
 }
 
-void update_interaction(Chunks* chunks, PhysicsSolver* physics, Player* player, Lighting* lighting){
+void update_interaction(Chunks* chunks, [[maybe_unused]] PhysicsSolver* physics, Player* player, Lighting* lighting){
 	Camera* camera = player->camera;
 	vec3 end;
 	vec3 norm;
@@ -223,9 +224,9 @@ void update_interaction(Chunks* chunks, PhysicsSolver* physics, Player* player, 
 			int x = (int)(iend.x)+(int)(norm.x);
 			int y = (int)(iend.y)+(int)(norm.y);
 			int z = (int)(iend.z)+(int)(norm.z);
-			if (!physics->isBlockInside(x,y,z, player->hitbox)){
-				chunks->set(x, y, z, player->choosenBlock);
-				lighting->onBlockSet(x,y,z, player->choosenBlock);
+			if (!PhysicsSolver::isBlockInside(x,y,z, player->hitbox)){
+				chunks->set(x, y, z, player->chBlock);
+				lighting->onBlockSet(x,y,z, player->chBlock);
 			}
 		}
 	}
@@ -239,7 +240,6 @@ int HEIGHT = 720;
 
 vec3 spawnpoint(-320, 255, 32);
 
-
 int main() {
 	setup_definitions();
 
@@ -247,7 +247,7 @@ int main() {
 	Events::initialize();
 
 	std::cout << "-- loading assets" << std::endl;
-	Assets* assets = new Assets();
+	auto* assets = new Assets();
 	int result = initialize_assets(assets);
 	if (result){
 		delete assets;
@@ -256,12 +256,12 @@ int main() {
 	}
 	std::cout << "-- loading world" << std::endl;
 
-	Camera *camera = new Camera(spawnpoint, radians(90.0f));
-	WorldFiles *wfile = new WorldFiles("world/", REGION_VOL * (CHUNK_VOL * 2 + 8));
-	Chunks *chunks = new Chunks(34,1,34, 0,0,0);
+	auto *camera = new Camera(spawnpoint, radians(90.0f));
+	auto *wfile = new WorldFiles("world/", REGION_VOL * (CHUNK_VOL * 2 + 8));
+	auto *chunks = new Chunks(34,1,34, 0,0,0);
 
 
-	Player* player = new Player(vec3(camera->position), DEFAULT_PLAYER_SPEED, camera);
+	auto* player = new Player(vec3(camera->position), DEFAULT_PLAYER_SPEED, camera);
 	wfile->readPlayer(player);
 	camera->rotation = mat4(1.0f);
 	camera->rotate(player->camY, player->camX, 0);
@@ -272,12 +272,12 @@ int main() {
 	PhysicsSolver physics(vec3(0,-GRAVITY,0));
 	Lighting lighting(chunks);
 
-	init_renderer();
+    allocateRenderer();
 
 	ChunksController chunksController(chunks, &lighting);
 
-	float lastTime = glfwGetTime();
-	[[maybe_unused]] float delta{};
+	double lastTime = glfwGetTime();
+	[[maybe_unused]] double delta{};
 
 	long frame = 0;
 
@@ -287,9 +287,9 @@ int main() {
 
 	std::cout << "-- initializing finished" << std::endl;
 
-	while (Window::isShouldClose() == false){
+	while (!Window::isShouldClose()){
 		frame++;
-		float currentTime = glfwGetTime();
+		double currentTime = glfwGetTime();
 		delta = currentTime - lastTime;
 		lastTime = currentTime;
 
@@ -301,17 +301,17 @@ int main() {
 			occlusion = !occlusion;
 		}
 
-		update_controls(&physics, chunks, player, delta);
+        updateControls(&physics, chunks, player, static_cast<float>(delta));
 		update_interaction(chunks, &physics, player, &lighting);
 
-		chunks->setCenter(wfile, camera->position.x,0,camera->position.z);
-		chunksController._buildMeshes(&renderer, frame);
+		chunks->setCenter(wfile, static_cast<std::int32_t>(camera->position.x),0,static_cast<float>(camera->position.z));
+        chunksController.buildMeshes(&renderer, static_cast<std::int32_t>(frame));
 
-		int freeLoaders = chunksController.countFreeLoaders();
+		const std::int32_t freeLoaders = chunksController.countFreeLoaders();
 		for (int i = 0; i < freeLoaders; i++)
 			chunksController.loadVisible(wfile);
 
-		draw_world(camera, assets, chunks, occlusion);
+        drawWorld(camera, assets, chunks, occlusion);
 
 		Window::swapBuffers();
 		Events::pullEvents();
@@ -319,13 +319,13 @@ int main() {
 	std::cout << "-- saving world" << std::endl;
 
 	wfile->writePlayer(player);
-	write_world(wfile, chunks);
-	close_world(wfile, chunks);
+    writeWorld(wfile, chunks);
+    closeWorld(wfile, chunks);
 
 	std::cout << "-- shutting down" << std::endl;
 
 	delete assets;
-	finalize_renderer();
+    finalizeRenderer();
 	Events::finalize();
 	Window::terminate();
 	return 0;

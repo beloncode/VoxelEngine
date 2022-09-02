@@ -1,7 +1,7 @@
-#ifndef VOXELS_CHUNKS_H_
-#define VOXELS_CHUNKS_H_
+#ifndef VOXELS_CHUNKS_H
+#define VOXELS_CHUNKS_H
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <glm/glm.hpp>
 
 using namespace glm;
@@ -20,31 +20,31 @@ public:
 	Mesh** meshes;
 	Mesh** meshesSecond;
 	size_t volume;
-	unsigned int w,h,d;
-	int ox,oy,oz;
+	unsigned int w, h, d;
+	int ox, oy, oz;
 
 	Chunks(int w, int h, int d, int ox, int oy, int oz);
 	~Chunks();
 
-	bool putChunk(Chunk* chunk);
+	bool putChunk(Chunk* chunk) const;
 
-	Chunk* getChunk(int x, int y, int z);
-	Chunk* getChunkByVoxel(int x, int y, int z);
-	voxel* get(int x, int y, int z);
-	unsigned short getLight(int x, int y, int z);
-	unsigned char getLight(int x, int y, int z, int channel);
-	void set(int x, int y, int z, int id);
-	voxel* rayCast(vec3 start, vec3 dir, float maxLength, vec3& end, vec3& norm, vec3& iend);
+	[[nodiscard]] Chunk* getChunk(int x, int y, int z) const;
+	[[nodiscard]] Chunk* getChunkByVoxel(int x, int y, int z) const;
+	[[nodiscard]] voxel* get(int x, int y, int z) const;
+	[[nodiscard]] unsigned short getLight(int x, int y, int z) const;
+	[[nodiscard]] unsigned char getLight(int x, int y, int z, int channel) const;
+	void set(int x, int y, int z, int id) const;
+	voxel* rayCast(vec3 start, vec3 dir, float maxLength, vec3& end, vec3& norm, vec3& iend) const;
 
-	bool isObstacle(int x, int y, int z);
+	[[nodiscard]] bool isObstacle(int x, int y, int z) const;
 
-	// does not move chunks inside
-	void _setOffset(int x, int y, int z);
+	// does not move m_chunks inside
+	void setOffset(int x, int y, int z);
 
 	void setCenter(WorldFiles* worldFiles, int x, int y, int z);
 	void translate(WorldFiles* worldFiles, int x, int y, int z);
 
-	void clear(bool freeMemory);
+	void clear(bool freeMemory) const;
 };
 
-#endif /* VOXELS_CHUNKS_H_ */
+#endif /* VOXELS_CHUNKS_H */

@@ -1,5 +1,5 @@
-#ifndef SRC_ASSETS_H_
-#define SRC_ASSETS_H_
+#ifndef SRC_ASSETS_H
+#define SRC_ASSETS_H
 
 #include <string>
 #include <unordered_map>
@@ -8,15 +8,16 @@ class Texture;
 class Shader;
 
 class Assets {
-	std::unordered_map<std::string, Texture*> textures;
-	std::unordered_map<std::string, Shader*> shaders;
 public:
 	~Assets();
-	Texture* getTexture(std::string name);
-	void store(Texture* texture, std::string name);
+	Texture* getTexture(const std::string& name);
+	void store(Texture* texture, const std::string& name);
 
-	Shader* getShader(std::string name);
-	void store(Shader* shader, std::string name);
+	Shader* getShader(const std::string& name);
+	void store(Shader* shader, const std::string& name);
+private:
+    std::unordered_map<std::string, Texture*> m_textures;
+    std::unordered_map<std::string, Shader*> m_shaders;
 };
 
-#endif /* SRC_ASSETS_H_ */
+#endif /* SRC_ASSETS_H */

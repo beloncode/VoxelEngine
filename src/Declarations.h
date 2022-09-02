@@ -10,9 +10,10 @@
 #include "voxels/Block.h"
 
 
-// Shaders, textures, renderers
+// Shaders, m_textures, renderers
 
-bool _load_shader(Assets* assets, std::string vertex_file, std::string fragment_file, std::string name){
+static bool loadShader(Assets* assets, const std::string& vertex_file, const std::string& fragment_file,
+                       const std::string& name){
 	Shader* shader = load_shader(vertex_file, fragment_file);
 	if (shader == nullptr){
 		std::cerr << "failed to load shader '" << name << "'" << std::endl;
@@ -22,8 +23,8 @@ bool _load_shader(Assets* assets, std::string vertex_file, std::string fragment_
 	return true;
 }
 
-bool _load_texture(Assets* assets, std::string filename, std::string name){
-	Texture* texture = load_texture(filename);
+bool loadTexture(Assets* assets, const std::string& filename, const std::string& name){
+	Texture* texture = loadTexture(filename);
 	if (texture == nullptr){
 		std::cerr << "failed to load texture '" << name << "'" << std::endl;
 		return false;
@@ -34,17 +35,17 @@ bool _load_texture(Assets* assets, std::string filename, std::string name){
 
 int initialize_assets(Assets* assets) {
 #define LOAD_SHADER(VERTEX, FRAGMENT, NAME) \
-	if (!_load_shader(assets, VERTEX, FRAGMENT, NAME))\
-		return 1;
+	if (!loadShader(assets, VERTEX, FRAGMENT, NAME))\
+		return 1
 #define LOAD_TEXTURE(FILENAME, NAME) \
-	if (!_load_texture(assets, FILENAME, NAME))\
-		return 1;
+	if (!loadTexture(assets, FILENAME, NAME))\
+		return 1
 
-	LOAD_SHADER("res/main.glslv", "res/main.glslf", "main");
-	LOAD_SHADER("res/crosshair.glslv", "res/crosshair.glslf", "crosshair");
-	LOAD_SHADER("res/lines.glslv", "res/lines.glslf", "lines");
+    LOAD_SHADER("res/main.glslv", "res/main.glslf", "main");
+    LOAD_SHADER("res/crosshair.glslv", "res/crosshair.glslf", "crosshair");
+    LOAD_SHADER("res/lines.glslv", "res/lines.glslf", "lines");
 
-	LOAD_TEXTURE("res/block.png", "block");
+    LOAD_TEXTURE("res/block.png", "block");
 	return 0;
 }
 
@@ -52,7 +53,7 @@ int initialize_assets(Assets* assets) {
 // All in-game definitions (blocks, items, etc..)
 void setup_definitions() {
 	// AIR
-	Block* block = new Block(0,0);
+	auto* block = new Block(0,0);
 	block->drawGroup = 1;
 	block->lightPassing = true;
 	block->skyLightPassing = true;

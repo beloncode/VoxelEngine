@@ -6,17 +6,19 @@
 #include "../physics/Hitbox.h"
 #include "../voxels/Chunk.h"
 
-union {
-	long _key;
-	int _coords[2];
-} _tempcoords;
+union tempcoords {
+	long key;
+	int coords[2];
+};
+
+static tempcoords tempCoords;
 
 #include <cassert>
 #include <iostream>
 #include <fstream>
 
-#define SECTION_POSITION 1
-#define SECTION_ROTATION 2
+constexpr std::int8_t SECTION_POSITION = 1;
+constexpr std::int8_t SECTION_ROTATION = 2;
 
 unsigned long WorldFiles::totalCompressed = 0;
 
@@ -31,8 +33,8 @@ void int2Bytes(int value, char* dest, unsigned int offset){
 	dest[offset+3] = (char) (value >> 0 & 255);
 }
 
-void float2Bytes(float fvalue, char* dest, unsigned int offset){
-	uint32_t value = *((uint32_t*)&fvalue);
+void float2Bytes(float f_value, char* dest, unsigned int offset){
+	uint32_t value = *((uint32_t*)&f_value);
 	dest[offset] = (char) (value >> 24 & 255);
 	dest[offset+1] = (char) (value >> 16 & 255);
 	dest[offset+2] = (char) (value >> 8 & 255);
@@ -40,7 +42,7 @@ void float2Bytes(float fvalue, char* dest, unsigned int offset){
 }
 
 float bytes2Float(char* srcs, unsigned int offset){
-	unsigned char* src = (unsigned char*) srcs;
+	auto src = reinterpret_cast<unsigned char*>(srcs);
 	uint32_t value = ((src[offset] << 24) |
 					  (src[offset+1] << 16) |
 					  (src[offset+2] << 8) |
@@ -78,14 +80,14 @@ void WorldFiles::put(const char* chunkData, int x, int y){
 	int localX = x - (regionX << REGION_SIZE_BIT);
 	int localY = y - (regionY << REGION_SIZE_BIT);
 
-	_tempcoords._coords[0] = regionX;
-	_tempcoords._coords[1] = regionY;
-	char** region = regions[_tempcoords._key];
+    tempCoords.coords[0] = regionX;
+    tempCoords.coords[1] = regionY;
+	char** region = regions[tempCoords.key];
 	if (region == nullptr){
 		region = new char*[REGION_VOL];
 		for (unsigned int i = 0; i < REGION_VOL; i++)
 			region[i] = nullptr;
-		regions[_tempcoords._key] = region;
+		regions[tempCoords.key] = region;
 	}
 	char* targetChunk = region[localY * REGION_SIZE + localX];
 	if (targetChunk == nullptr){
@@ -98,11 +100,11 @@ void WorldFiles::put(const char* chunkData, int x, int y){
 
 }
 
-std::string WorldFiles::getRegionFile(int x, int y) {
+std::string WorldFiles::getRegionFile(int x, int y) const {
 	return directory + std::to_string(x) + "_" + std::to_string(y) + ".bin";
 }
 
-std::string WorldFiles::getPlayerFile() {
+std::string WorldFiles::getPlayerFile() const {
 	return directory + "/player.bin";
 }
 
@@ -117,22 +119,22 @@ bool WorldFiles::getChunk(int x, int y, char* out){
 	int chunkIndex = localY * REGION_SIZE + localX;
 	assert(chunkIndex >= 0 && chunkIndex < REGION_VOL);
 
-	_tempcoords._coords[0] = regionX;
-	_tempcoords._coords[1] = regionY;
+    tempCoords.coords[0] = regionX;
+    tempCoords.coords[1] = regionY;
 
-	char** region = regions[_tempcoords._key];
+	auto region = regions[tempCoords.key];
 	if (region == nullptr)
-		return readChunk(x,y,out);
+		return readChunk(x, y, out);
 
 	char* chunk = region[chunkIndex];
 	if (chunk == nullptr)
-		return readChunk(x,y,out);
+		return readChunk(x, y, out);
 	for (unsigned int i = 0; i < CHUNK_VOL; i++)
 		out[i] = chunk[i];
 	return true;
 }
 
-bool WorldFiles::readChunk(int x, int y, char* out){
+bool WorldFiles::readChunk(int x, int y, char* out) const{
 	assert(out != nullptr);
 
 	int regionX = x >> REGION_SIZE_BIT;
@@ -154,7 +156,7 @@ bool WorldFiles::readChunk(int x, int y, char* out){
 	input.read((char*)(&offset), 4);
 	// Ordering bytes from big-endian to machine order (any, just reading)
 	offset = bytes2Int((const unsigned char*)(&offset), 0);
-	//assert (offset < 1000000);
+	// assert (offset < 1000000);
 	if (offset == 0){
 		input.close();
 		return false;
@@ -163,7 +165,7 @@ bool WorldFiles::readChunk(int x, int y, char* out){
 	input.read((char*)(&offset), 4);
 	size_t compressedSize = bytes2Int((const unsigned char*)(&offset), 0);
 
-	input.read(mainBufferIn, compressedSize);
+	input.read(mainBufferIn, static_cast<std::streamsize>(compressedSize));
 	input.close();
 
 	decompressRLE(mainBufferIn, compressedSize, out, CHUNK_VOL);
@@ -182,14 +184,14 @@ void WorldFiles::write(){
 		longToCoords(x,y, it->first);
 
 		unsigned int size = writeRegion(mainBufferOut, x,y, it->second);
-		write_binary_file(getRegionFile(x,y), mainBufferOut, size);
+        WriteBinaryFile(getRegionFile(x, y), mainBufferOut, size);
 	}
 }
 
-void WorldFiles::writePlayer(Player* player){
+void WorldFiles::writePlayer(Player* player) const{
 	char dst[1+3*4 + 1+2*4];
 
-	glm::vec3 position = player->hitbox->position;
+	const glm::vec3 position = player->hitbox->position;
 
 	size_t offset = 0;
 	dst[offset++] = SECTION_POSITION;
@@ -198,15 +200,15 @@ void WorldFiles::writePlayer(Player* player){
 	float2Bytes(position.z, dst, offset); offset += 4;
 
 	dst[offset++] = SECTION_ROTATION;
-	float2Bytes(player->camX, dst, offset); offset += 4;
-	float2Bytes(player->camY, dst, offset); offset += 4;
+	float2Bytes(player->camX, dst, offset); /*offset += 4; */
+	float2Bytes(player->camY, dst, offset); /*offset += 4; */
 
-	write_binary_file(getPlayerFile(), (const char*)dst, sizeof(dst));
+    WriteBinaryFile(getPlayerFile(), (const char *) dst, sizeof(dst));
 }
 
-bool WorldFiles::readPlayer(Player* player) {
+bool WorldFiles::readPlayer(Player* player) const {
 	size_t length = 0;
-	char* data = read_binary_file(getPlayerFile(), length);
+	char* data = readBinaryFile(getPlayerFile(), length);
 	if (data == nullptr){
 		std::cerr << "could not to read player.bin" << std::endl;
 		return false;
@@ -225,6 +227,8 @@ bool WorldFiles::readPlayer(Player* player) {
 			player->camX = bytes2Float(data, offset); offset += 4;
 			player->camY = bytes2Float(data, offset); offset += 4;
 			break;
+        default:
+            throw std::logic_error("This section isn't implemented");
 		}
 	}
 	player->hitbox->position = position;
@@ -232,7 +236,7 @@ bool WorldFiles::readPlayer(Player* player) {
 	return true;
 }
 
-unsigned int WorldFiles::writeRegion(char* out, int x, int y, char** region){
+unsigned int WorldFiles::writeRegion(char* out, int x, int y, char** region) const{
 	unsigned int offset = REGION_VOL * 4;
 	for (unsigned int i = 0; i < offset; i++)
 		out[i] = 0;
@@ -256,11 +260,11 @@ unsigned int WorldFiles::writeRegion(char* out, int x, int y, char** region){
 		if (chunk == nullptr){
 			int2Bytes(0, out, i*4);
 		} else {
-			int2Bytes(offset, out, i*4);
+			int2Bytes(static_cast<std::int32_t>(offset), out, i*4);
 
-			unsigned int compressedSize = compressRLE(chunk, CHUNK_VOL, compressed);
+			auto compressedSize = compressRLE(chunk, CHUNK_VOL, compressed);
 
-			int2Bytes(compressedSize, out, offset);
+			int2Bytes(static_cast<std::int32_t>(compressedSize), out, offset);
 			offset += 4;
 
 			for (unsigned int j = 0; j < compressedSize; j++)
@@ -272,7 +276,7 @@ unsigned int WorldFiles::writeRegion(char* out, int x, int y, char** region){
 }
 
 void longToCoords(int& x, int& y, long key) {
-	_tempcoords._key = key;
-	x = _tempcoords._coords[0];
-	y = _tempcoords._coords[1];
+    tempCoords.key = key;
+	x = tempCoords.coords[0];
+	y = tempCoords.coords[1];
 }

@@ -19,11 +19,11 @@ Texture::~Texture() {
 	glDeleteTextures(1, &id);
 }
 
-void Texture::bind(){
+void Texture::bind() const{
 	glBindTexture(GL_TEXTURE_2D, id);
 }
 
-void Texture::reload(unsigned char* data){
+[[maybe_unused]] void Texture::reload(unsigned char* data) const{
 	glBindTexture(GL_TEXTURE_2D, id);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,
 		GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid *) data);

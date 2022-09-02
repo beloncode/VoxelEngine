@@ -1,12 +1,12 @@
 #include "ChunksController.h"
 #include "Chunk.h"
 #include "Chunks.h"
-#include "WorldGenerator.h"
-#include "../graphics/Mesh.h"
-#include "../graphics/VoxelRenderer.h"
-#include "../lighting/Lighting.h"
-#include "../files/WorldFiles.h"
+#include "graphics/Mesh.h"
+#include "graphics/VoxelRenderer.h"
+#include "lighting/Lighting.h"
+#include "files/WorldFiles.h"
 #include "ChunksLoader.h"
+
 #include <iostream>
 
 #ifdef _WIN32
@@ -19,63 +19,64 @@
 #define MIN_SURROUNDING 9
 
 
-ChunksController::ChunksController(Chunks* chunks, Lighting* lighting) : chunks(chunks), lighting(lighting){
-	loadersCount = std::thread::hardware_concurrency() - 1;
-	if (loadersCount <= 0)
-		loadersCount = 1;
-	loaders = new ChunksLoader*[loadersCount];
-	for (int i = 0; i < loadersCount; i++){
-		loaders[i] = new ChunksLoader();
+ChunksController::ChunksController(Chunks* chunks, Lighting* lighting) : m_chunks(chunks){
+	(void)lighting;
+    m_loadersCount = std::thread::hardware_concurrency() - 1;
+	if (m_loadersCount <= 0)
+        m_loadersCount = 1;
+    m_loaders = new ChunksLoader*[m_loadersCount];
+	for (int i = 0; i < m_loadersCount; i++){
+        m_loaders[i] = new ChunksLoader();
 	}
-	std::cout << "created " << loadersCount << " loaders" << std::endl;
+	std::cout << "created " << m_loadersCount << " m_loaders" << std::endl;
 }
 
 ChunksController::~ChunksController(){
-	for (int i = 0; i < loadersCount; i++)
-		delete loaders[i];
-	delete[] loaders;
+	for (int i = 0; i < m_loadersCount; i++)
+		delete m_loaders[i];
+	delete[] m_loaders;
 }
 
 int ChunksController::countFreeLoaders(){
 	int count = 0;
-	for (int i = 0; i < loadersCount; i++){
-		if (!loaders[i]->isBusy())
+	for (int i = 0; i < m_loadersCount; i++){
+		if (!m_loaders[i]->isBusy())
 			count++;
 	}
 	return count;
 }
 
 bool ChunksController::loadVisible(WorldFiles* worldFiles){
-	const int w = chunks->w;
-	const int h = chunks->h;
-	const int d = chunks->d;
-	const int ox = chunks->ox;
-	const int oy = chunks->oy;
-	const int oz = chunks->oz;
+	const auto w = m_chunks->w;
+	const auto h = m_chunks->h;
+	const auto d = m_chunks->d;
+	int ox = m_chunks->ox;
+	int oy = m_chunks->oy;
+	int oz = m_chunks->oz;
 	int nearX = 0;
 	int nearY = 0;
 	int nearZ = 0;
-	int minDistance = (w/2)*(w/2);
+	auto minDistance = (w/2)*(w/2);
 	for (int y = 0; y < h; y++){
 		for (int z = 2; z < d-2; z++){
 			for (int x = 2; x < w-2; x++){
-				int index = (y * d + z) * w + x;
-				Chunk* chunk = chunks->chunks[index];
+				auto index = (y * d + z) * w + x;
+				Chunk* chunk = m_chunks->chunks[index];
 				if (chunk != nullptr){
 					int surrounding = 0;
-					for (int oz = -1; oz <= 1; oz++){
-						for (int ox = -1; ox <= 1; ox++){
-							Chunk* other = chunks->getChunk(chunk->x+ox, chunk->y, chunk->z+oz);
+					for (int i = -1; i <= 1; i++){
+						for (int k = -1; k <= 1; k++){
+							Chunk* other = m_chunks->getChunk(chunk->x + k, chunk->y, chunk->z + i);
 							if (other != nullptr && other->ready) surrounding++;
 						}
 					}
 					chunk->surrounding = surrounding;
 					continue;
 				}
-				int lx = x - w / 2;
-				int ly = y - h / 2;
-				int lz = z - d / 2;
-				int distance = (lx * lx + ly * ly + lz * lz);
+				auto lx = x - w / 2;
+				auto ly = y - h / 2;
+				auto lz = z - d / 2;
+				auto distance = (lx * lx + ly * ly + lz * lz);
 				if (distance < minDistance){
 					minDistance = distance;
 					nearX = x;
@@ -86,14 +87,14 @@ bool ChunksController::loadVisible(WorldFiles* worldFiles){
 		}
 	}
 
-	int index = (nearY * d + nearZ) * w + nearX;
-	Chunk* chunk = chunks->chunks[index];
+	auto index = (nearY * d + nearZ) * w + nearX;
+	Chunk* chunk = m_chunks->chunks[index];
 	if (chunk != nullptr)
 		return false;
 
 	ChunksLoader* freeLoader = nullptr;
-	for (int i = 0; i < loadersCount; i++){
-		ChunksLoader* loader = loaders[i];
+	for (int i = 0; i < m_loadersCount; i++){
+		ChunksLoader* loader = m_loaders[i];
 		if (loader->isBusy()){
 			continue;
 		}
@@ -106,38 +107,39 @@ bool ChunksController::loadVisible(WorldFiles* worldFiles){
 	if (worldFiles->getChunk(chunk->x, chunk->z, (char*)chunk->voxels))
 		chunk->loaded = true;
 
-	chunks->chunks[index] = chunk;
+    m_chunks->chunks[index] = chunk;
 
 	Chunk* closes[27];
-	for (int i = 0; i < 27; i++)
-		closes[i] = nullptr;
-	for (size_t j = 0; j < chunks->volume; j++){
-		Chunk* other = chunks->chunks[j];
+	for (auto & close : closes)
+		close = nullptr;
+	for (size_t j = 0; j < m_chunks->volume; j++){
+		Chunk* other = m_chunks->chunks[j];
 		if (other == nullptr)
 			continue;
 		if (!other->ready)
 			continue;
 
-		int ox = other->x - chunk->x;
-		int oy = other->y - chunk->y;
-		int oz = other->z - chunk->z;
+		int ox_l = other->x - chunk->x;
+		int oy_l = other->y - chunk->y;
+		int oz_l = other->z - chunk->z;
 
-		if (abs(ox) > 1 || abs(oy) > 1 || abs(oz) > 1)
+		if (abs(ox_l) > 1 || abs(oy_l) > 1 || abs(oz_l) > 1)
 			continue;
 
-		ox += 1;
-		oy += 1;
-		oz += 1;
-		closes[(oy * 3 + oz) * 3 + ox] = other;
+		ox_l += 1;
+		oy_l += 1;
+		oz_l += 1;
+		closes[(oy_l * 3 + oz_l) * 3 + ox_l] = other;
 	}
 	freeLoader->perform(chunk, (Chunk**)closes);
 	return true;
 }
 
-bool ChunksController::_buildMeshes(VoxelRenderer* renderer, int tick) {
-	const int w = chunks->w;
-	const int h = chunks->h;
-	const int d = chunks->d;
+bool ChunksController::buildMeshes(VoxelRenderer* renderer, int tick) {
+	(void)tick;
+	const auto w = m_chunks->w;
+	const auto h = m_chunks->h;
+	const auto d = m_chunks->d;
 
 	int nearX = 0;
 	int nearY = 0;
@@ -146,22 +148,22 @@ bool ChunksController::_buildMeshes(VoxelRenderer* renderer, int tick) {
 	for (int y = 0; y < h; y++){
 		for (int z = 1; z < d-1; z++){
 			for (int x = 1; x < w-1; x++){
-				int index = (y * d + z) * w + x;
-				Chunk* chunk = chunks->chunks[index];
+				auto index = (y * d + z) * w + x;
+				Chunk* chunk = m_chunks->chunks[index];
 				if (chunk == nullptr)
 					continue;
-				Mesh* mesh = chunks->meshes[index];
+				Mesh* mesh = m_chunks->meshes[index];
 				if (mesh != nullptr && !chunk->modified)
 					continue;
 				if (!chunk->ready || chunk->surrounding < MIN_SURROUNDING){
 					continue;
 				}
-				int lx = x - w / 2;
-				int ly = y - h / 2;
-				int lz = z - d / 2;
-				int distance = (lx * lx + ly * ly + lz * lz);
+				auto lx = x - w / 2;
+				auto ly = y - h / 2;
+				auto lz = z - d / 2;
+				auto distance = (lx * lx + ly * ly + lz * lz);
 				if (distance < minDistance){
-					minDistance = distance;
+					minDistance = static_cast<std::int32_t>(distance);
 					nearX = x;
 					nearY = y;
 					nearZ = z;
@@ -170,27 +172,31 @@ bool ChunksController::_buildMeshes(VoxelRenderer* renderer, int tick) {
 		}
 	}
 
-	int index = (nearY * d + nearZ) * w + nearX;
+	const auto index = (nearY * d + nearZ) * w + nearX;
 
 
-	Chunk* chunk = chunks->chunks[index];
+	Chunk* chunk = m_chunks->chunks[index];
 	if (chunk == nullptr){
 		return false;
 	}
-	Mesh* mesh = chunks->meshes[index];
+	Mesh* mesh = m_chunks->meshes[index];
 	if (mesh == nullptr || chunk->modified){
 		Chunk* closes[27];
+		/*
+		Deleting a null pointer causes nothing (no effect)
 		if (mesh != nullptr)
 			delete mesh;
+		 */
+		delete mesh;
 		if (chunk->isEmpty()){
-			chunks->meshes[index] = nullptr;
+			m_chunks->meshes[index] = nullptr;
 			return false;
 		}
 		chunk->modified = false;
-		for (int i = 0; i < 27; i++)
-			closes[i] = nullptr;
-		for (size_t j = 0; j < chunks->volume; j++){
-			Chunk* other = chunks->chunks[j];
+		for (auto & close : closes)
+			close = nullptr;
+		for (size_t j = 0; j < m_chunks->volume; j++){
+			Chunk* other = m_chunks->chunks[j];
 			if (other == nullptr)
 				continue;
 			if (!other->ready)
@@ -209,7 +215,7 @@ bool ChunksController::_buildMeshes(VoxelRenderer* renderer, int tick) {
 			closes[(oy * 3 + oz) * 3 + ox] = other;
 		}
 		mesh = renderer->render(chunk, (const Chunk**)closes);
-		chunks->meshes[index] = mesh;
+        m_chunks->meshes[index] = mesh;
 		return true;
 	}
 	return false;

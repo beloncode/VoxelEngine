@@ -7,7 +7,7 @@ GLFWwindow* Window::window;
 int Window::width = 0;
 int Window::height = 0;
 
-int Window::initialize(int width, int height, const char* title){
+int Window::initialize(int widthLocal, int heightLocal, const char* title){
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -15,7 +15,7 @@ int Window::initialize(int width, int height, const char* title){
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 	//glfwWindowHint(GLFW_SAMPLES, 2);
 
-	window = glfwCreateWindow(width, height, title, nullptr, nullptr);
+	window = glfwCreateWindow(widthLocal, heightLocal, title, nullptr, nullptr);
 	if (window == nullptr){
 		std::cerr << "Failed to create GLFW Window" << std::endl;
 		glfwTerminate();
@@ -28,7 +28,7 @@ int Window::initialize(int width, int height, const char* title){
 		std::cerr << "Failed to initialize GLEW" << std::endl;
 		return -1;
 	}
-	glViewport(0,0, width, height);
+	glViewport(0, 0, widthLocal, heightLocal);
 
 	glClearColor(0.0f,0.0f,0.0f,1);
 	glEnable(GL_DEPTH_TEST);
@@ -36,8 +36,8 @@ int Window::initialize(int width, int height, const char* title){
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	Window::width = width;
-	Window::height = height;
+	Window::width = widthLocal;
+	Window::height = heightLocal;
 	return 0;
 }
 

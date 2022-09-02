@@ -1,5 +1,5 @@
-#ifndef FILES_WORLDFILES_H_
-#define FILES_WORLDFILES_H_
+#ifndef FILES_WORLDFILES_H
+#define FILES_WORLDFILES_H
 
 #include <string>
 #include <map>
@@ -29,18 +29,18 @@ public:
 
 	void put(const char* chunkData, int x, int y);
 
-	bool readPlayer(Player* player);
-	bool readChunk(int x, int y, char* out);
+	bool readPlayer(Player* player) const;
+	bool readChunk(int x, int y, char* out) const;
 	bool getChunk(int x, int y, char* out);
-	void readRegion(char* fileContent);
-	unsigned int writeRegion(char* out, int x, int y, char** region);
-	void writePlayer(Player* player);
+	/* void readRegion(char* fileContent); */
+	unsigned int writeRegion(char* out, int x, int y, char** region) const;
+	void writePlayer(Player* player) const;
 	void write();
 
-	std::string getRegionFile(int x, int y);
-	std::string getPlayerFile();
+	std::string getRegionFile(int x, int y) const;
+	std::string getPlayerFile() const;
 };
 
 extern void longToCoords(int& x, int& y, long key);
 
-#endif /* FILES_WORLDFILES_H_ */
+#endif /* FILES_WORLDFILES_H */

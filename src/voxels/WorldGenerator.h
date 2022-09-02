@@ -1,5 +1,5 @@
-#ifndef VOXELS_WORLDGENERATOR_H_
-#define VOXELS_WORLDGENERATOR_H_
+#ifndef VOXELS_WORLDGENERATOR_H
+#define VOXELS_WORLDGENERATOR_H
 
 class voxel;
 
@@ -8,4 +8,4 @@ public:
 	static void generate(voxel* voxels, int x, int y, int z);
 };
 
-#endif /* VOXELS_WORLDGENERATOR_H_ */
+#endif /* VOXELS_WORLDGENERATOR_H */

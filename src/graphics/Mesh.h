@@ -1,19 +1,21 @@
-#ifndef GRAPHICS_MESH_H_
-#define GRAPHICS_MESH_H_
+#ifndef GRAPHICS_MESH_H
+#define GRAPHICS_MESH_H
 
-#include <stdlib.h>
+#include <cstdlib>
 
 class Mesh {
-	unsigned int vao;
-	unsigned int vbo;
-	size_t vertices;
-	size_t vertexSize;
 public:
 	Mesh(const float* buffer, size_t vertices, const int* attrs);
 	~Mesh();
 
 	void reload(const float* buffer, size_t vertices);
 	void draw(unsigned int primitive);
+private:
+    unsigned int m_vao{};
+    unsigned int m_vbo{};
+    size_t m_vertices{};
+    size_t m_vertexSize{};
+
 };
 
-#endif /* GRAPHICS_MESH_H_ */
+#endif /* GRAPHICS_MESH_H */

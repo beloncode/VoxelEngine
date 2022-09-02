@@ -1,7 +1,8 @@
-#ifndef LIGHTING_LIGHTSOLVER_H_
-#define LIGHTING_LIGHTSOLVER_H_
+#ifndef LIGHTING_LIGHTSOLVER_H
+#define LIGHTING_LIGHTSOLVER_H
 
 #include <queue>
+#include <cstdint>
 
 class Chunks;
 
@@ -9,14 +10,10 @@ struct lightentry {
 	int x;
 	int y;
 	int z;
-	unsigned char light;
+	std::uint8_t light;
 };
 
 class LightSolver {
-	std::queue<lightentry> addqueue;
-	std::queue<lightentry> remqueue;
-	Chunks* chunks;
-	int channel;
 public:
 	LightSolver(Chunks* chunks, int channel);
 
@@ -24,6 +21,11 @@ public:
 	void add(int x, int y, int z, int emission);
 	void remove(int x, int y, int z);
 	void solve();
+private:
+    std::queue<lightentry> m_addQueue;
+    std::queue<lightentry> m_remQueue;
+    Chunks* m_chunks;
+    std::int32_t m_channel;
 };
 
-#endif /* LIGHTING_LIGHTSOLVER_H_ */
+#endif /* LIGHTING_LIGHTSOLVER_H */

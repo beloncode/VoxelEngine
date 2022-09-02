@@ -1,15 +1,13 @@
 #include "Chunks.h"
 #include "Chunk.h"
-#include "voxel.h"
+#include "Voxel.h"
 #include "Block.h"
-#include "WorldGenerator.h"
-#include "../lighting/Lightmap.h"
-#include "../files/WorldFiles.h"
+#include "lighting/Lightmap.h"
+#include "files/WorldFiles.h"
 
-#include "../graphics/Mesh.h"
+#include "graphics/Mesh.h"
 
-#include <math.h>
-#include <limits.h>
+#include <cmath>
 
 Chunks::Chunks(int w, int h, int d, int ox, int oy, int oz) : w(w), h(h), d(d), ox(ox), oy(oy), oz(oz){
 	volume = w*h*d;
@@ -33,7 +31,7 @@ Chunks::~Chunks(){
 	delete[] chunks;
 }
 
-voxel* Chunks::get(int x, int y, int z){
+voxel* Chunks::get(int x, int y, int z) const{
 	x -= ox * CHUNK_W;
 	y -= oy * CHUNK_H;
 	z -= oz * CHUNK_D;
@@ -48,20 +46,22 @@ voxel* Chunks::get(int x, int y, int z){
 	Chunk* chunk = chunks[(cy * d + cz) * w + cx];
 	if (chunk == nullptr)
 		return nullptr;
-	int lx = x - cx * CHUNK_W;
-	int ly = y - cy * CHUNK_H;
-	int lz = z - cz * CHUNK_D;
-	return &chunk->voxels[(ly * CHUNK_D + lz) * CHUNK_W + lx];
+
+	const std::int32_t lx = x - cx * CHUNK_W;
+    const std::int32_t ly = y - cy * CHUNK_H;
+    const std::int32_t lz = z - cz * CHUNK_D;
+
+    return &chunk->voxels[(ly * CHUNK_D + lz) * CHUNK_W + lx];
 }
 
-bool Chunks::isObstacle(int x, int y, int z){
+bool Chunks::isObstacle(int x, int y, int z) const{
 	voxel* v = get(x,y,z);
 	if (v == nullptr)
 		return true; // void - is obstacle
 	return Block::blocks[v->id]->obstacle;
 }
 
-unsigned char Chunks::getLight(int x, int y, int z, int channel){
+unsigned char Chunks::getLight(int x, int y, int z, int channel) const{
 	x -= ox * CHUNK_W;
 	y -= oy * CHUNK_H;
 	z -= oz * CHUNK_D;
@@ -82,7 +82,7 @@ unsigned char Chunks::getLight(int x, int y, int z, int channel){
 	return chunk->lightmap->get(lx,ly,lz, channel);
 }
 
-unsigned short Chunks::getLight(int x, int y, int z){
+unsigned short Chunks::getLight(int x, int y, int z) const{
 	x -= ox * CHUNK_W;
 	y -= oy * CHUNK_H;
 	z -= oz * CHUNK_D;
@@ -103,7 +103,7 @@ unsigned short Chunks::getLight(int x, int y, int z){
 	return chunk->lightmap->get(lx,ly,lz);
 }
 
-Chunk* Chunks::getChunkByVoxel(int x, int y, int z){
+Chunk* Chunks::getChunkByVoxel(int x, int y, int z) const{
 	x -= ox * CHUNK_W;
 	y -= oy * CHUNK_H;
 	z -= oz * CHUNK_D;
@@ -118,7 +118,7 @@ Chunk* Chunks::getChunkByVoxel(int x, int y, int z){
 	return chunks[(cy * d + cz) * w + cx];
 }
 
-Chunk* Chunks::getChunk(int x, int y, int z){
+Chunk* Chunks::getChunk(int x, int y, int z) const{
 	x -= ox;
 	y -= oy;
 	z -= oz;
@@ -127,7 +127,7 @@ Chunk* Chunks::getChunk(int x, int y, int z){
 	return chunks[(y * d + z) * w + x];
 }
 
-void Chunks::set(int x, int y, int z, int id){
+void Chunks::set(int x, int y, int z, int id) const{
 	x -= ox * CHUNK_W;
 	y -= oy * CHUNK_H;
 	z -= oz * CHUNK_D;
@@ -157,7 +157,7 @@ void Chunks::set(int x, int y, int z, int id){
 	if (lz == CHUNK_D-1 && (chunk = getChunk(cx+ox, cy+oy, cz+oz+1))) chunk->modified = true;
 }
 
-voxel* Chunks::rayCast(vec3 a, vec3 dir, float maxDist, vec3& end, vec3& norm, vec3& iend) {
+voxel* Chunks::rayCast(vec3 a, vec3 dir, float maxDist, vec3& end, vec3& norm, vec3& iend) const {
 	float px = a.x;
 	float py = a.y;
 	float pz = a.z;
@@ -166,14 +166,14 @@ voxel* Chunks::rayCast(vec3 a, vec3 dir, float maxDist, vec3& end, vec3& norm, v
 	float dy = dir.y;
 	float dz = dir.z;
 
-	float t = 0.0f;
-	int ix = floor(px);
-	int iy = floor(py);
-	int iz = floor(pz);
+	float t{};
+	float ix = floor(px);
+	float iy = floor(py);
+	float iz = floor(pz);
 
-	float stepx = (dx > 0.0f) ? 1.0f : -1.0f;
-	float stepy = (dy > 0.0f) ? 1.0f : -1.0f;
-	float stepz = (dz > 0.0f) ? 1.0f : -1.0f;
+    auto stepx = (dx > 0.0f) ? 1.0f : -1.0f;
+	auto stepy = (dy > 0.0f) ? 1.0f : -1.0f;
+	auto stepz = (dz > 0.0f) ? 1.0f : -1.0f;
 
 	float infinity = std::numeric_limits<float>::infinity();
 
@@ -192,7 +192,7 @@ voxel* Chunks::rayCast(vec3 a, vec3 dir, float maxDist, vec3& end, vec3& norm, v
 	int steppedIndex = -1;
 
 	while (t <= maxDist){
-		voxel* voxel = get(ix, iy, iz);
+		voxel* voxel = get(static_cast<int>(ix), static_cast<int>(iy), static_cast<int>(iz));
 		if (voxel == nullptr || Block::blocks[voxel->id]->selectable){
 			end.x = px + t * dx;
 			end.y = py + t * dy;
@@ -255,9 +255,11 @@ void Chunks::setCenter(WorldFiles* worldFiles, int x, int y, int z) {
 	if (x < 0) cx--;
 	if (y < 0) cy--;
 	if (z < 0) cz--;
-	cx -= w/2;
-	cy -= h/2;
-	cz -= d/2;
+
+    cx -= static_cast<std::int32_t>(w/2);
+	cy -= static_cast<std::int32_t>(h/2);
+	cz -= static_cast<std::int32_t>(d/2);
+
 	if (cx != 0 || cy != 0 || cz != 0)
 		translate(worldFiles, cx,cy,cz);
 }
@@ -267,13 +269,13 @@ void Chunks::translate(WorldFiles* worldFiles, int dx, int dy, int dz){
 		chunksSecond[i] = nullptr;
 		meshesSecond[i] = nullptr;
 	}
-	for (unsigned int y = 0; y < h; y++){
-		for (unsigned int z = 0; z < d; z++){
-			for (unsigned int x = 0; x < w; x++){
+	for (std::int32_t y = 0; y < h; y++){
+		for (std::int32_t z = 0; z < d; z++){
+			for (std::int32_t x = 0; x < w; x++){
 				Chunk* chunk = chunks[(y * d + z) * w + x];
-				int nx = x - dx;
-				int ny = y - dy;
-				int nz = z - dz;
+				std::int32_t nx = x - dx;
+                std::int32_t ny = y - dy;
+                std::int32_t nz = z - dz;
 				if (chunk == nullptr)
 					continue;
 				Mesh* mesh = meshes[(y * d + z) * w + x];
@@ -301,16 +303,16 @@ void Chunks::translate(WorldFiles* worldFiles, int dx, int dy, int dz){
 	oz += dz;
 }
 
-void Chunks::_setOffset(int x, int y, int z){
+void Chunks::setOffset(int x, int y, int z){
 	ox = x;
 	oy = y;
 	oz = z;
 }
 
-bool Chunks::putChunk(Chunk* chunk) {
-	int x = chunk->x;
-	int y = chunk->y;
-	int z = chunk->z;
+bool Chunks::putChunk(Chunk* chunk) const {
+    std::int32_t x = chunk->x;
+    std::int32_t y = chunk->y;
+    std::int32_t z = chunk->z;
 	x -= ox;
 	y -= oy;
 	z -= oz;
@@ -320,7 +322,7 @@ bool Chunks::putChunk(Chunk* chunk) {
 	return true;
 }
 
-void Chunks::clear(bool freeMemory){
+void Chunks::clear(bool freeMemory) const{
 	for (size_t i = 0; i < volume; i++){
 		if (freeMemory){
 			chunks[i]->decref();

@@ -1,28 +1,29 @@
 #include "Mesh.h"
 #include <GL/glew.h>
 
-Mesh::Mesh(const float* buffer, size_t vertices, const int* attrs) : vertices(vertices){
-	vertexSize = 0;
-	for (int i = 0; attrs[i]; i++){
-		vertexSize += attrs[i];
+Mesh::Mesh(const float* buffer, size_t vertices, const int* attrs) : m_vertices(vertices){
+    m_vertexSize = 0;
+	for (std::int32_t i = 0; attrs[i]; i++){
+        m_vertexSize += attrs[i];
 	}
 
-	glGenVertexArrays(1, &vao);
-	glGenBuffers(1, &vbo);
+	glGenVertexArrays(1, &m_vao);
+	glGenBuffers(1, &m_vbo);
 
-	glBindVertexArray(vao);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBindVertexArray(m_vao);
+	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 	if (buffer){
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertexSize * vertices, buffer, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(float) * m_vertexSize * vertices), buffer, GL_STATIC_DRAW);
 	} else {
 		glBufferData(GL_ARRAY_BUFFER, 0, {}, GL_STATIC_DRAW);
 	}
 
 	// attributes
-	int offset = 0;
-	for (int i = 0; attrs[i]; i++){
-		int size = attrs[i];
-		glVertexAttribPointer(i, size, GL_FLOAT, GL_FALSE, vertexSize * sizeof(float), (GLvoid*)(offset * sizeof(float)));
+	std::int32_t offset = 0;
+	for (std::int32_t i = 0; attrs[i]; i++){
+		const std::int32_t size = attrs[i];
+		glVertexAttribPointer(i, size, GL_FLOAT, GL_FALSE, static_cast<GLsizei>(m_vertexSize * sizeof(float)),
+                              (GLvoid*)(offset * sizeof(float)));
 		glEnableVertexAttribArray(i);
 		offset += size;
 	}
@@ -31,19 +32,19 @@ Mesh::Mesh(const float* buffer, size_t vertices, const int* attrs) : vertices(ve
 }
 
 Mesh::~Mesh(){
-	glDeleteVertexArrays(1, &vao);
-	glDeleteBuffers(1, &vbo);
+	glDeleteVertexArrays(1, &m_vao);
+	glDeleteBuffers(1, &m_vbo);
 }
 
 void Mesh::reload(const float* buffer, size_t vertices){
-	glBindVertexArray(vao);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertexSize * vertices, buffer, GL_STATIC_DRAW);
-	this->vertices = vertices;
+	glBindVertexArray(m_vao);
+	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_vertexSize * vertices, buffer, GL_STATIC_DRAW);
+	this->m_vertices = vertices;
 }
 
 void Mesh::draw(unsigned int primitive){
-	glBindVertexArray(vao);
-	glDrawArrays(primitive, 0, vertices);
+	glBindVertexArray(m_vao);
+	glDrawArrays(primitive, 0, m_vertices);
 	glBindVertexArray(0);
 }

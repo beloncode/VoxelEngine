@@ -1,5 +1,5 @@
-#ifndef WORLD_RENDERER_CPP
-#define WORLD_RENDERER_CPP
+#ifndef WORLD_RENDERER_H
+#define WORLD_RENDERER_H
 
 #include <vector>
 #include <algorithm>
@@ -18,9 +18,9 @@
 #include "voxels/Chunks.h"
 #include "voxels/Chunk.h"
 
-float _camera_cx;
-float _camera_cz;
-Chunks* _chunks;
+extern float g_camera_cx;
+extern float g_camera_cz;
+extern Chunks* g_chunks;
 
 Mesh *crosshair;
 
@@ -33,30 +33,30 @@ float vertices[] = {
 	    0.01f,-0.01f,
 };
 
-int attrs[] = {
+static const std::int32_t attrs[] = {
 		2,  0 //null terminator
 };
 
 LineBatch *lineBatch;
 
-void init_renderer(){
+void allocateRenderer(){
 	crosshair = new Mesh(vertices, 4, attrs);
 	lineBatch = new LineBatch(4096);
 }
 
-
-void finalize_renderer(){
+void finalizeRenderer(){
 	delete crosshair;
 	delete lineBatch;
 }
 
-void draw_chunk(size_t index, Camera* camera, Shader* shader, bool occlusion){
-	Chunk* chunk = _chunks->chunks[index];
-	Mesh* mesh = _chunks->meshes[index];
-	if (mesh == nullptr)
+void drawChunk(size_t index, Camera* camera, Shader* shader, bool occlusion){
+    Chunk* chunk = g_chunks->chunks[index];
+	Mesh* mesh = g_chunks->meshes[index];
+    assert(mesh != nullptr);
+    if (mesh == nullptr)
 		return;
 
-	// Simple frustum culling (culling chunks behind the camera in 2D - XZ)
+	// Simple frustum culling (culling m_chunks behind the camera in 2D - XZ)
 	if (occlusion){
 		const float cameraX = camera->position.x;
 		const float cameraZ = camera->position.z;
@@ -65,16 +65,16 @@ void draw_chunk(size_t index, Camera* camera, Shader* shader, bool occlusion){
 
 		bool unoccluded = false;
 		do {
-			if ((chunk->x*CHUNK_W-cameraX)*camDirX + (chunk->z*CHUNK_D-cameraZ)*camDirZ >= 0.0){
+			if ((static_cast<float>(chunk->x)*CHUNK_W-cameraX)*camDirX + (static_cast<float>(chunk->z)*CHUNK_D-cameraZ)*camDirZ >= 0.0){
 				unoccluded = true; break;
 			}
-			if (((chunk->x+1)*CHUNK_W-cameraX)*camDirX + (chunk->z*CHUNK_D-cameraZ)*camDirZ >= 0.0){
+			if ((static_cast<float>(chunk->x+1)*CHUNK_W-cameraX)*camDirX + (static_cast<float>(chunk->z)*CHUNK_D-cameraZ)*camDirZ >= 0.0){
 				unoccluded = true; break;
 			}
-			if (((chunk->x+1)*CHUNK_W-cameraX)*camDirX + ((chunk->z+1)*CHUNK_D-cameraZ)*camDirZ >= 0.0){
+			if (((static_cast<float>(chunk->x+1))*CHUNK_W-cameraX)*camDirX + (static_cast<float>(chunk->z+1)*CHUNK_D-cameraZ)*camDirZ >= 0.0){
 				unoccluded = true; break;
 			}
-			if ((chunk->x*CHUNK_W-cameraX)*camDirX + ((chunk->z+1)*CHUNK_D-cameraZ)*camDirZ >= 0.0){
+			if ((static_cast<float>(chunk->x)*CHUNK_W-cameraX)*camDirX + (static_cast<float>(chunk->z+1)*CHUNK_D-cameraZ)*camDirZ >= 0.0){
 				unoccluded = true; break;
 			}
 		} while (false);
@@ -82,26 +82,28 @@ void draw_chunk(size_t index, Camera* camera, Shader* shader, bool occlusion){
 			return;
 	}
 
-	mat4 model = glm::translate(mat4(1.0f), vec3(chunk->x*CHUNK_W+0.5f, chunk->y*CHUNK_H+0.5f, chunk->z*CHUNK_D+0.5f));
+	const mat4 model = glm::translate(mat4(1.0f), vec3(static_cast<float>(chunk->x)*CHUNK_W+0.5f,
+                                                 static_cast<float>(chunk->y)*CHUNK_H+0.5f,
+                                                 static_cast<float>(chunk->z)*CHUNK_D+0.5f));
 	shader->uniformMatrix("u_model", model);
 	mesh->draw(GL_TRIANGLES);
 }
 
-bool chunks_comparator(size_t i, size_t j) {
-	Chunk* a = _chunks->chunks[i];
-	Chunk* b = _chunks->chunks[j];
-	return ((a->x + 0.5f - _camera_cx)*(a->x + 0.5f - _camera_cx) + (a->z + 0.5f - _camera_cz)*(a->z + 0.5f - _camera_cz)
-			>
-			(b->x + 0.5f - _camera_cx)*(b->x + 0.5f - _camera_cx) + (b->z + 0.5f - _camera_cz)*(b->z + 0.5f - _camera_cz));
+bool chunksComparator(size_t i, size_t j) {
+	Chunk* a = g_chunks->chunks[i];
+	Chunk* b = g_chunks->chunks[j];
+	return ((static_cast<float>(a->x) + 0.5f - g_camera_cx) * (static_cast<float>(a->x) + 0.5f - g_camera_cx) +
+            (static_cast<float>(a->z) + 0.5f - g_camera_cz) * (static_cast<float>(a->z) + 0.5f - g_camera_cz) >
+            (static_cast<float>(b->x) + 0.5f - g_camera_cx) * (static_cast<float>(b->x) + 0.5f - g_camera_cx) +
+        (static_cast<float>(b->z) + 0.5f - g_camera_cz) * (static_cast<float>(b->z) + 0.5f - g_camera_cz));
 }
 
-
-void draw_world(Camera* camera, Assets* assets,
-				Chunks* chunks, bool occlusion){
+void drawWorld(Camera* camera, Assets* assets,
+               Chunks* chunks, bool occlusion){
 	glClearColor(0.7f,0.71f,0.73f,1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	_chunks = chunks;
+    g_chunks = chunks;
 
 	// Draw VAO
 	Texture* texture = assets->getTexture("block");
@@ -127,17 +129,16 @@ void draw_world(Camera* camera, Assets* assets,
 			indices.push_back(i);
 	}
 
-	float px = camera->position.x / (float)CHUNK_W;
-	float pz = camera->position.z / (float)CHUNK_D;
+	const float px = camera->position.x / (float)CHUNK_W;
+	const float pz = camera->position.z / (float)CHUNK_D;
 
-	_camera_cx = px;
-	_camera_cz = pz;
+    g_camera_cx = px;
+    g_camera_cz = pz;
 
-	std::sort(indices.begin(), indices.end(), chunks_comparator);
+    std::sort(indices.begin(), indices.end(), chunksComparator);
 
-
-	for (size_t i = 0; i < indices.size(); i++){
-		draw_chunk(indices[i], camera, shader, occlusion);
+	for (unsigned long indice : indices){
+        drawChunk(indice, camera, shader, occlusion);
 	}
 
 	crosshairShader->use();
@@ -153,4 +154,4 @@ void draw_world(Camera* camera, Assets* assets,
 	lineBatch->render();
 }
 
-#endif // WORLD_RENDERER_CPP
+#endif // WORLD_RENDERER_H

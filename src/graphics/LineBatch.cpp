@@ -12,37 +12,37 @@
 
 #define LB_VERTEX_SIZE (3+4)
 
-LineBatch::LineBatch(size_t capacity) : capacity(capacity) {
+LineBatch::LineBatch(size_t capacity) : m_capacity(capacity) {
 	int attrs[] = {3,4, 0};
-	buffer = new float[capacity * LB_VERTEX_SIZE * 2];
-	mesh = new Mesh(buffer, 0, attrs);
-	index = 0;
+    m_buffer = new float[capacity * LB_VERTEX_SIZE * 2];
+    m_mesh = new Mesh(m_buffer, 0, attrs);
+    m_index = 0;
 }
 
 LineBatch::~LineBatch(){
-	delete[] buffer;
-	delete mesh;
+	delete[] m_buffer;
+	delete m_mesh;
 }
 
 void LineBatch::line(float x1, float y1, float z1, float x2, float y2, float z2,
 		float r, float g, float b, float a) {
-	buffer[index] = x1;
-	buffer[index+1] = y1;
-	buffer[index+2] = z1;
-	buffer[index+3] = r;
-	buffer[index+4] = g;
-	buffer[index+5] = b;
-	buffer[index+6] = a;
-	index += LB_VERTEX_SIZE;
+    m_buffer[m_index] = x1;
+    m_buffer[m_index + 1] = y1;
+    m_buffer[m_index + 2] = z1;
+    m_buffer[m_index + 3] = r;
+    m_buffer[m_index + 4] = g;
+    m_buffer[m_index + 5] = b;
+    m_buffer[m_index + 6] = a;
+    m_index += LB_VERTEX_SIZE;
 
-	buffer[index] = x2;
-	buffer[index+1] = y2;
-	buffer[index+2] = z2;
-	buffer[index+3] = r;
-	buffer[index+4] = g;
-	buffer[index+5] = b;
-	buffer[index+6] = a;
-	index += LB_VERTEX_SIZE;
+    m_buffer[m_index] = x2;
+    m_buffer[m_index + 1] = y2;
+    m_buffer[m_index + 2] = z2;
+    m_buffer[m_index + 3] = r;
+    m_buffer[m_index + 4] = g;
+    m_buffer[m_index + 5] = b;
+    m_buffer[m_index + 6] = a;
+    m_index += LB_VERTEX_SIZE;
 }
 
 void LineBatch::box(float x, float y, float z, float w, float h, float d,
@@ -68,9 +68,9 @@ void LineBatch::box(float x, float y, float z, float w, float h, float d,
 }
 
 void LineBatch::render(){
-	if (index == 0)
+	if (m_index == 0)
 		return;
-	mesh->reload(buffer, index / LB_VERTEX_SIZE);
-	mesh->draw(GL_LINES);
-	index = 0;
+	m_mesh->reload(m_buffer, m_index / LB_VERTEX_SIZE);
+	m_mesh->draw(GL_LINES);
+    m_index = 0;
 }

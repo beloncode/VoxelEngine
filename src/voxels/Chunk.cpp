@@ -1,9 +1,9 @@
 #include "Chunk.h"
-#include "voxel.h"
+#include "Voxel.h"
 #include "../lighting/Lightmap.h"
 
 
-Chunk::Chunk(int xpos, int ypos, int zpos) : x(xpos), y(ypos), z(zpos){
+Chunk::Chunk(int x_pos, int y_pos, int z_pos) : x(x_pos), y(y_pos), z(z_pos){
 	voxels = new voxel[CHUNK_VOL];
 	for (unsigned int i = 0; i < CHUNK_VOL; i++)
 		voxels[i].id = 1;
@@ -15,7 +15,7 @@ Chunk::~Chunk(){
 	delete[] voxels;
 }
 
-bool Chunk::isEmpty(){
+bool Chunk::isEmpty() const{
 	int id = -1;
 	for (int i = 0; i < CHUNK_VOL; i++){
 		if (voxels[i].id != id){
@@ -28,8 +28,8 @@ bool Chunk::isEmpty(){
 	return true;
 }
 
-Chunk* Chunk::clone() const {
-	Chunk* other = new Chunk(x,y,z);
+[[maybe_unused]] Chunk* Chunk::clone() const {
+	auto* other = new Chunk(x,y,z);
 	for (int i = 0; i < CHUNK_VOL; i++)
 		other->voxels[i] = voxels[i];
 	other->lightmap->set(lightmap);

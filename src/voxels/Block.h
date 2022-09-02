@@ -1,5 +1,5 @@
-#ifndef VOXELS_BLOCK_H_
-#define VOXELS_BLOCK_H_
+#ifndef VOXELS_BLOCK_H
+#define VOXELS_BLOCK_H
 
 class Block {
 public:
@@ -18,4 +18,4 @@ public:
 	Block(unsigned int id, int texture);
 };
 
-#endif /* VOXELS_BLOCK_H_ */
+#endif /* VOXELS_BLOCK_H */

@@ -1,5 +1,5 @@
-#ifndef SRC_OBJECTS_PLAYER_H_
-#define SRC_OBJECTS_PLAYER_H_
+#ifndef SRC_OBJECTS_PLAYER_H
+#define SRC_OBJECTS_PLAYER_H
 
 #include <glm/glm.hpp>
 
@@ -9,11 +9,11 @@ class Hitbox;
 class Player {
 public:
 	float speed;
-	Camera* camera;
-	Hitbox* hitbox;
+	Camera* camera = nullptr;
+	Hitbox* hitbox = nullptr;
 	bool flight = false;
-	int choosenBlock;
-	float camX, camY;
+	int chBlock{};
+	float camX{}, camY{};
 	float cameraShaking = 0.0f;
 	float cameraShakingTimer = 0.0f;
 	glm::vec3 interpVel {0.0f, 0.0f, 0.0f};
@@ -21,4 +21,4 @@ public:
 	~Player();
 };
 
-#endif /* SRC_OBJECTS_PLAYER_H_ */
+#endif /* SRC_OBJECTS_PLAYER_H */

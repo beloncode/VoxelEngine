@@ -1,18 +1,18 @@
 #include "Batch2D.h"
 #include "Mesh.h"
 
-Batch2D::Batch2D(size_t capacity) : capacity(capacity),
-									offset(0),
-									color(1.0f, 1.0f, 1.0f, 1.0f){
-	const int attrs[] = {
+[[maybe_unused]] Batch2D::Batch2D(size_t capacity) : /*m_capacity(m_capacity),
+                                                     m_offset(0), */
+                                                     m_color(1.0f, 1.0f, 1.0f, 1.0f){
+	static const int attrs[] = {
 			2, 2, 4, 0 //null terminator
 	};
 
-	buffer = new float[capacity];
-	mesh = new Mesh(nullptr, 0, attrs);
+    m_buffer = new float[capacity];
+    m_mesh = new Mesh(nullptr, 0, attrs);
 }
 
 Batch2D::~Batch2D(){
-	delete buffer;
-	delete mesh;
+	delete m_buffer;
+	delete m_mesh;
 }
