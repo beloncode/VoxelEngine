@@ -149,7 +149,7 @@ void PhysicsSolver::step(Chunks* chunks, Hitbox* hitbox, float delta, unsigned s
 	}
 }
 
-[[maybe_unused]] bool PhysicsSolver::isBlockInside(std::int32_t x, std::int32_t y, std::int32_t z, Hitbox* hitbox) {
+bool PhysicsSolver::isBlockInside(std::int32_t x, std::int32_t y, std::int32_t z, Hitbox* hitbox) {
 	const vec3& pos = hitbox->position;
 	const vec3& half = hitbox->halfsize;
 	return (static_cast<float>(x) >= floor(pos.x-half.x) && static_cast<float>(x) <= floor(pos.x+half.x) &&

@@ -76,9 +76,9 @@ int generateTree(fnl_state *noise, PseudoRandom* random, const float* heights, i
 	if (height < 55)
 		return 0;
 	int lx = real_x - centerX;
-	const std::uint32_t radius = random->rand() % 4 + 3;
-	const std::uint32_t ly = real_y - height - 3 * radius;
-	const std::uint32_t lz = real_z - centerY;
+	const std::int32_t radius = random->rand() % 4 + 3;
+	const std::int32_t ly = real_y - height - 3 * radius;
+	const std::int32_t lz = real_z - centerY;
 	if (lx == 0 && lz == 0 && real_y - height < 4*radius)
 		return 6;
 	if (lx*lx+ly*ly/2+lz*lz < radius*radius)

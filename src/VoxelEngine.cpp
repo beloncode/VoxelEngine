@@ -203,7 +203,7 @@ static void updateControls(PhysicsSolver* physics,
 	}
 }
 
-void updateInteraction(Chunks* chunks, [[maybe_unused]] PhysicsSolver* physics, Player* player, Lighting* lighting){
+void updateInteraction(Chunks* chunks, PhysicsSolver* physics, Player* player, Lighting* lighting){
 	Camera* camera = player->camera;
 	vec3 end;
 	vec3 norm;
@@ -223,7 +223,7 @@ void updateInteraction(Chunks* chunks, [[maybe_unused]] PhysicsSolver* physics, 
 			int x = (int)(iend.x)+(int)(norm.x);
 			int y = (int)(iend.y)+(int)(norm.y);
 			int z = (int)(iend.z)+(int)(norm.z);
-			if (!PhysicsSolver::isBlockInside(x,y,z, player->hitbox)){
+			if (!physics->isBlockInside(x,y,z, player->hitbox)){
 				chunks->set(x, y, z, player->chBlock);
 				lighting->onBlockSet(x,y,z, player->chBlock);
 			}
@@ -231,11 +231,11 @@ void updateInteraction(Chunks* chunks, [[maybe_unused]] PhysicsSolver* physics, 
 	}
 }
 
-int WIDTH = 1280;
-int HEIGHT = 720;
+static constexpr std::int32_t WIDTH = 1280;
+static constexpr std::int32_t HEIGHT = 720;
 
-#define GRAVITY 19.6f
-#define DEFAULT_PLAYER_SPEED 4.0f
+static constexpr float GRAVITY = 19.6f;
+static constexpr float DEFAULT_PLAYER_SPEED = 4.0f;
 
 vec3 spawnpoint(-320, 255, 32);
 
@@ -247,7 +247,7 @@ int main() {
 
 	std::puts("Loading GAME Assets from 'res' folder...");
 	auto* assets = new Assets();
-	int result = initializeAssets(assets);
+	const int result = initializeAssets(assets);
 	if (result){
 		delete assets;
 		Window::terminate();
@@ -255,9 +255,9 @@ int main() {
 	}
 	std::puts("Loading main world from 'world' folder");
 
-	auto *camera = new Camera(spawnpoint, radians(90.0f));
-	auto *wfile = new WorldFiles("world/", REGION_VOL * (CHUNK_VOL * 2 + 8));
-	auto *chunks = new Chunks(34,1,34, 0,0,0);
+	auto* camera = new Camera(spawnpoint, radians(90.0f));
+	auto* wfile = new WorldFiles("world/", REGION_VOL * (CHUNK_VOL * 2 + 8));
+	auto* chunks = new Chunks(34, 1, 34, 0, 0, 0);
 
 	auto* player = new Player(vec3(camera->position), DEFAULT_PLAYER_SPEED, camera);
 	wfile->readPlayer(player);
