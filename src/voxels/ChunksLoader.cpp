@@ -19,7 +19,7 @@ void ChunksLoader::_thread(){
 			continue;
 		}
 		Chunk* chunk = current;
-        chunks.setOffset(chunk->x - 1, chunk->y - 1, chunk->z - 1);
+		chunks.setOffset(chunk->x - 1, chunk->y - 1, chunk->z - 1);
 		for (size_t i = 0; i < CLOSES_C; i++){
 			Chunk* other = closes[i];
 			if (other){

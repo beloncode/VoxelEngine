@@ -22,10 +22,10 @@ public:
 	void remove(int x, int y, int z);
 	void solve();
 private:
-    std::queue<lightentry> m_addQueue;
-    std::queue<lightentry> m_remQueue;
-    Chunks* m_chunks;
-    std::int32_t m_channel;
+	std::queue<lightentry> m_addQueue;
+	std::queue<lightentry> m_remQueue;
+	Chunks* m_chunks;
+	std::int32_t m_channel;
 };
 
 #endif /* LIGHTING_LIGHTSOLVER_H */

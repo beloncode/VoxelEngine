@@ -13,8 +13,8 @@ class Lightmap;
 
 class Chunk {
 public:
-    Chunk(int x, int y, int z);
-    ~Chunk();
+	Chunk(int x, int y, int z);
+	~Chunk();
 
 	int x{}, y{}, z{};
 	voxel* voxels = nullptr;
@@ -27,7 +27,7 @@ public:
 
 	[[nodiscard]] bool isEmpty() const;
 
-    [[maybe_unused]] [[nodiscard]] Chunk* clone() const;
+	[[maybe_unused]] [[nodiscard]] Chunk* clone() const;
 	void incref();
 	void decref();
 };

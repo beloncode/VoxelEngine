@@ -18,7 +18,7 @@ Texture* Assets::getTexture(const std::string& name){
 }
 
 void Assets::store(Texture* texture, const std::string& name){
-    m_textures[name] = texture;
+	m_textures[name] = texture;
 }
 
 
@@ -27,5 +27,5 @@ Shader* Assets::getShader(const std::string& name){
 }
 
 void Assets::store(Shader* shader, const std::string& name){
-    m_shaders[name] = shader;
+	m_shaders[name] = shader;
 }

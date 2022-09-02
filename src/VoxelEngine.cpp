@@ -72,12 +72,12 @@ static void closeWorld(WorldFiles* wfile, Chunks* chunks){
 #define JUMP_FORCE 7.0f
 
 static void updateControls(PhysicsSolver* physics,
-                    Chunks* chunks,
-                    Player* player,
-                    float delta){
+					Chunks* chunks,
+					Player* player,
+					float delta){
 
 	if (Events::jpressed(GLFW_KEY_TAB)){
-        Events::toggleCursor();
+		Events::toggleCursor();
 	}
 
 	for (int i = 1; i < 10; i++){
@@ -240,12 +240,12 @@ int HEIGHT = 720;
 vec3 spawnpoint(-320, 255, 32);
 
 int main() {
-    setupDefinitions();
+	setupDefinitions();
 
 	Window::initialize(WIDTH, HEIGHT, "VoxelEngine Part-11");
 	Events::initialize();
 
-    std::puts("Loading GAME Assets from 'res' folder...");
+	std::puts("Loading GAME Assets from 'res' folder...");
 	auto* assets = new Assets();
 	int result = initializeAssets(assets);
 	if (result){
@@ -253,7 +253,7 @@ int main() {
 		Window::terminate();
 		return result;
 	}
-    std::puts("Loading main world from 'world' folder");
+	std::puts("Loading main world from 'world' folder");
 
 	auto *camera = new Camera(spawnpoint, radians(90.0f));
 	auto *wfile = new WorldFiles("world/", REGION_VOL * (CHUNK_VOL * 2 + 8));
@@ -264,13 +264,13 @@ int main() {
 	camera->rotation = mat4(1.0f);
 	camera->rotate(player->camY, player->camX, 0);
 
-    std::puts("Preparing main system (engine is started now)");
+	std::puts("Preparing main system (engine is started now)");
 
 	VoxelRenderer renderer(1024*1024);
 	PhysicsSolver physics(vec3(0,-GRAVITY,0));
 	Lighting lighting(chunks);
 
-    allocateRenderer();
+	allocateRenderer();
 
 	ChunksController chunksController(chunks, &lighting);
 
@@ -283,7 +283,7 @@ int main() {
 
 	glfwSwapInterval(1);
 
-    std::puts("Initialization completed (engine in loop)");
+	std::puts("Initialization completed (engine in loop)");
 
 	while (!Window::isShouldClose()){
 		frame++;
@@ -299,17 +299,17 @@ int main() {
 			occlusion = !occlusion;
 		}
 
-        updateControls(&physics, chunks, player, static_cast<float>(delta));
-        updateInteraction(chunks, &physics, player, &lighting);
+		updateControls(&physics, chunks, player, static_cast<float>(delta));
+		updateInteraction(chunks, &physics, player, &lighting);
 
 		chunks->setCenter(wfile, static_cast<std::int32_t>(camera->position.x),0,static_cast<float>(camera->position.z));
-        chunksController.buildMeshes(&renderer, static_cast<std::int32_t>(frame));
+		chunksController.buildMeshes(&renderer, static_cast<std::int32_t>(frame));
 
 		const std::int32_t freeLoaders = chunksController.countFreeLoaders();
 		for (int i = 0; i < freeLoaders; i++)
 			chunksController.loadVisible(wfile);
 
-        drawWorld(camera, assets, chunks, occlusion);
+		drawWorld(camera, assets, chunks, occlusion);
 
 		Window::swapBuffers();
 		Events::pullEvents();
@@ -317,13 +317,13 @@ int main() {
 	std::puts("Saving world data");
 
 	wfile->writePlayer(player);
-    writeWorld(wfile, chunks);
-    closeWorld(wfile, chunks);
+	writeWorld(wfile, chunks);
+	closeWorld(wfile, chunks);
 
-    std::puts("Going out");
+	std::puts("Going out");
 
 	delete assets;
-    finalizeRenderer();
+	finalizeRenderer();
 	Events::finalize();
 	Window::terminate();
 	return 0;

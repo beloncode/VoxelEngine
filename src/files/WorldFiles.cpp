@@ -60,13 +60,13 @@ WorldFiles::~WorldFiles(){
 	delete[] mainBufferOut;
 	std::unordered_map<long, char**>::iterator it;
 	for (it = regions.begin(); it != regions.end(); it++){
-	    char** region = it->second;
-	    if (region == nullptr)
-	    	continue;
-	    for (unsigned int i = 0; i < REGION_VOL; i++){
-	    	delete[] region[i];
-	    }
-	    delete[] region;
+		char** region = it->second;
+		if (region == nullptr)
+			continue;
+		for (unsigned int i = 0; i < REGION_VOL; i++){
+			delete[] region[i];
+		}
+		delete[] region;
 	}
 	regions.clear();
 }
@@ -80,8 +80,8 @@ void WorldFiles::put(const char* chunkData, int x, int y){
 	int localX = x - (regionX << REGION_SIZE_BIT);
 	int localY = y - (regionY << REGION_SIZE_BIT);
 
-    tempCoords.coords[0] = regionX;
-    tempCoords.coords[1] = regionY;
+	tempCoords.coords[0] = regionX;
+	tempCoords.coords[1] = regionY;
 	char** region = regions[tempCoords.key];
 	if (region == nullptr){
 		region = new char*[REGION_VOL];
@@ -119,8 +119,8 @@ bool WorldFiles::getChunk(int x, int y, char* out){
 	int chunkIndex = localY * REGION_SIZE + localX;
 	assert(chunkIndex >= 0 && chunkIndex < REGION_VOL);
 
-    tempCoords.coords[0] = regionX;
-    tempCoords.coords[1] = regionY;
+	tempCoords.coords[0] = regionX;
+	tempCoords.coords[1] = regionY;
 
 	auto region = regions[tempCoords.key];
 	if (region == nullptr)
@@ -184,7 +184,7 @@ void WorldFiles::write(){
 		longToCoords(x,y, it->first);
 
 		unsigned int size = writeRegion(mainBufferOut, x,y, it->second);
-        WriteBinaryFile(getRegionFile(x, y), mainBufferOut, size);
+		WriteBinaryFile(getRegionFile(x, y), mainBufferOut, size);
 	}
 }
 
@@ -203,14 +203,14 @@ void WorldFiles::writePlayer(Player* player) const{
 	float2Bytes(player->camX, dst, offset); offset += 4;
 	float2Bytes(player->camY, dst, offset); offset += 4;
 
-    WriteBinaryFile(getPlayerFile(), (const char *) dst, sizeof(dst));
+	WriteBinaryFile(getPlayerFile(), (const char *) dst, sizeof(dst));
 }
 
 bool WorldFiles::readPlayer(Player* player) const {
 	size_t length = 0;
 	char* data = readBinaryFile(getPlayerFile(), length);
 	if (data == nullptr){
-        std::fprintf(stderr, "Couldn't read Player configuration data (player.bin)\n");
+		std::fprintf(stderr, "Couldn't read Player configuration data (player.bin)\n");
 		return false;
 	}
 	glm::vec3 position = player->hitbox->position;
@@ -227,8 +227,8 @@ bool WorldFiles::readPlayer(Player* player) const {
 			player->camX = bytes2Float(data, offset); offset += 4;
 			player->camY = bytes2Float(data, offset); offset += 4;
 			break;
-        default:
-            throw std::logic_error("This section isn't implemented");
+		default:
+			throw std::logic_error("This section isn't implemented");
 		}
 	}
 	player->hitbox->position = position;
@@ -276,7 +276,7 @@ unsigned int WorldFiles::writeRegion(char* out, int x, int y, char** region) con
 }
 
 void longToCoords(int& x, int& y, long key) {
-    tempCoords.key = key;
+	tempCoords.key = key;
 	x = tempCoords.coords[0];
 	y = tempCoords.coords[1];
 }

@@ -18,9 +18,9 @@ public:
 	bool loadVisible(WorldFiles* worldFiles);
 	bool buildMeshes(VoxelRenderer* renderer, int tick);
 private:
-    Chunks* m_chunks;
-    ChunksLoader** m_loaders;
-    std::uint32_t m_loadersCount;
+	Chunks* m_chunks;
+	ChunksLoader** m_loaders;
+	std::uint32_t m_loadersCount;
 };
 
 #endif /* VOXELS_CHUNKSCONTROLLER_H */

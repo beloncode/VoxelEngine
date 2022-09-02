@@ -16,7 +16,7 @@ public:
 	void step(Chunks* chunks, Hitbox* hitbox, float delta, unsigned substeps, bool shifting, float gravityScale) const;
 	static bool isBlockInside(int x, int y, int z, Hitbox* hitbox);
 private:
-    vec3 m_gravity;
+	vec3 m_gravity;
 };
 
 #endif /* PHYSICS_PHYSICSSOLVER_H */

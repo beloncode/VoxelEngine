@@ -30,7 +30,7 @@ public:
 	[[nodiscard]] mat4 getProjection() const;
 	[[nodiscard]] mat4 getView() const;
 private:
-    void updateVectors();
+	void updateVectors();
 
 };
 

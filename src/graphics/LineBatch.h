@@ -23,10 +23,10 @@ public:
 			float r, float g, float b, float a);
 	void render();
 private:
-    Mesh* m_mesh = nullptr;
-    float* m_buffer = nullptr;
-    size_t m_index{};
-    size_t m_capacity{};
+	Mesh* m_mesh = nullptr;
+	float* m_buffer = nullptr;
+	size_t m_index{};
+	size_t m_capacity{};
 };
 
 #endif /* GRAPHICS_LINEBATCH_H */

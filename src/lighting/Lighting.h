@@ -9,16 +9,16 @@ class LightSolver;
 
 class Lighting {
 	Chunks* chunks = nullptr;
-    std::shared_ptr<LightSolver> solverR;
-    std::shared_ptr<LightSolver> solverG;
-    std::shared_ptr<LightSolver> solverB;
-    std::shared_ptr<LightSolver> solverS;
-    /*
+	std::shared_ptr<LightSolver> solverR;
+	std::shared_ptr<LightSolver> solverG;
+	std::shared_ptr<LightSolver> solverB;
+	std::shared_ptr<LightSolver> solverS;
+	/*
 	LightSolver* solverR = nullptr;
 	LightSolver* solverG = nullptr;
 	LightSolver* solverB = nullptr;
 	LightSolver* solverS = nullptr;
-    */
+	*/
 public:
 	explicit Lighting(Chunks* chunks);
 	~Lighting() = default;

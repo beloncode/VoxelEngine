@@ -24,7 +24,7 @@ public:
 	static bool pressed(int keycode);
 	static bool jpressed(int keycode);
 
-    [[maybe_unused]] static bool clicked(int button);
+	[[maybe_unused]] static bool clicked(int button);
 	static bool jclicked(int button);
 
 	static void toggleCursor();

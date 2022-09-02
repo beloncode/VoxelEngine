@@ -13,8 +13,8 @@ public:
 
 	Mesh* render(Chunk* chunk, const Chunk** chunks);
 private:
-    float* m_buffer;
-    size_t m_capacity;
+	float* m_buffer;
+	size_t m_capacity;
 };
 
 #endif /* GRAPHICS_VOXELRENDERER_H */

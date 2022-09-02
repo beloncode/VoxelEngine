@@ -40,7 +40,7 @@ static void mouseButtonCallback([[maybe_unused]] GLFWwindow* window, int button,
 }
 
 static void keyCallback([[maybe_unused]] GLFWwindow* window, int key, [[maybe_unused]] int scancode,
-                        int action, [[maybe_unused]] int mode) {
+						int action, [[maybe_unused]] int mode) {
 	if (action == GLFW_PRESS){
 		Events::keys[key] = true;
 		Events::frames[key] = Events::current;
@@ -59,16 +59,16 @@ static void windowSizeCallback([[maybe_unused]] GLFWwindow* window, int width, i
 
 int Events::initialize(){
 	GLFWwindow* window = Window::window;
-    keys = new bool[1032];
-    frames = new uint[1032];
+	keys = new bool[1032];
+	frames = new uint[1032];
 
 	memset(keys, false, 1032 * sizeof(bool));
 	memset(frames, 0, 1032 * sizeof(uint));
 
-    glfwSetKeyCallback(window, keyCallback);
-    glfwSetMouseButtonCallback(window, mouseButtonCallback);
-    glfwSetCursorPosCallback(window, cursorPositionCallback);
-    glfwSetWindowSizeCallback(window, windowSizeCallback);
+	glfwSetKeyCallback(window, keyCallback);
+	glfwSetMouseButtonCallback(window, mouseButtonCallback);
+	glfwSetCursorPosCallback(window, cursorPositionCallback);
+	glfwSetWindowSizeCallback(window, windowSizeCallback);
 	return 0;
 }
 
@@ -100,7 +100,7 @@ bool Events::jclicked(int button){
 }
 
 void Events::toggleCursor(){
-    cursor_locked = !cursor_locked;
+	cursor_locked = !cursor_locked;
 	Window::setCursorMode(cursor_locked ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
 }
 

@@ -51,12 +51,12 @@ void LightSolver::remove(int x, int y, int z) {
 
 void LightSolver::solve(){
 	constexpr int coords[] = {
-            0, 0, 1,
+			0, 0, 1,
 			0, 0,-1,
 			0, 1, 0,
 			0,-1, 0,
-            1, 0, 0,
-            -1, 0, 0
+			1, 0, 0,
+			-1, 0, 0
 	};
 
 	while (!m_remQueue.empty()){
@@ -64,27 +64,27 @@ void LightSolver::solve(){
 		m_remQueue.pop();
 
 		for (size_t i = 0; i < 6; i++) {
-            int x = entry.x+coords[i*3+0];
+			int x = entry.x+coords[i*3+0];
 			int y = entry.y+coords[i*3+1];
 			int z = entry.z+coords[i*3+2];
 			Chunk* chunk = m_chunks->getChunkByVoxel(x, y, z);
 			if (chunk) {
-                int light = m_chunks->getLight(x, y, z, m_channel);
-                if (light != 0 && light == entry.light-1){
+				int light = m_chunks->getLight(x, y, z, m_channel);
+				if (light != 0 && light == entry.light-1){
 					lightentry n_entry{};
-                    n_entry.x = x;
-                    n_entry.y = y;
-                    n_entry.z = z;
-                    n_entry.light = light;
+					n_entry.x = x;
+					n_entry.y = y;
+					n_entry.z = z;
+					n_entry.light = light;
 					m_remQueue.push(n_entry);
 					chunk->lightmap->set(x-chunk->x*CHUNK_W, y-chunk->y*CHUNK_H, z-chunk->z*CHUNK_D, m_channel, 0);
 					chunk->modified = true;
 				}else if (light >= entry.light){
 					lightentry n_entry{};
-                    n_entry.x = x;
-                    n_entry.y = y;
-                    n_entry.z = z;
-                    n_entry.light = light;
+					n_entry.x = x;
+					n_entry.y = y;
+					n_entry.z = z;
+					n_entry.light = light;
 					m_addQueue.push(n_entry);
 				}
 			}
@@ -111,10 +111,10 @@ void LightSolver::solve(){
 					chunk->lightmap->set(x-chunk->x*CHUNK_W, y-chunk->y*CHUNK_H, z-chunk->z*CHUNK_D, m_channel, entry.light - 1);
 					chunk->modified = true;
 					lightentry n_entry{};
-                    n_entry.x = x;
-                    n_entry.y = y;
-                    n_entry.z = z;
-                    n_entry.light = entry.light-1;
+					n_entry.x = x;
+					n_entry.y = y;
+					n_entry.z = z;
+					n_entry.light = entry.light-1;
 					m_addQueue.push(n_entry);
 				}
 			}

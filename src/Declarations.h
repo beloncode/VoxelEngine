@@ -13,7 +13,7 @@
 // Shaders, m_textures, renderers
 
 static bool loadShader(Assets* assets, const std::string& vertex_file, const std::string& fragment_file,
-                       const std::string& name){
+					   const std::string& name){
 	Shader* shader = load_shader(vertex_file, fragment_file);
 	if (shader == nullptr){
 		std::cerr << "failed to load shader '" << name << "'" << std::endl;
@@ -41,11 +41,11 @@ int initializeAssets(Assets* assets) {
 	if (!loadTexture(assets, FILENAME, NAME))\
 		return 1
 
-    LOAD_SHADER("res/main.glslv", "res/main.glslf", "main");
-    LOAD_SHADER("res/crosshair.glslv", "res/crosshair.glslf", "crosshair");
-    LOAD_SHADER("res/lines.glslv", "res/lines.glslf", "lines");
+	LOAD_SHADER("res/main.glslv", "res/main.glslf", "main");
+	LOAD_SHADER("res/crosshair.glslv", "res/crosshair.glslf", "crosshair");
+	LOAD_SHADER("res/lines.glslv", "res/lines.glslf", "lines");
 
-    LOAD_TEXTURE("res/block.png", "block");
+	LOAD_TEXTURE("res/block.png", "block");
 	return 0;
 }
 

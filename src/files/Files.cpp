@@ -55,7 +55,7 @@ char* readBinaryFile(const std::string& filename, size_t& length) {
 
 // returns decompressed length
 unsigned int decompressRLE(const char* src, unsigned int length, char* dst, unsigned int targetLength){
-    (void)targetLength;
+	(void)targetLength;
 	unsigned int offset = 0;
 	for (unsigned int i = 0; i < length;){
 		unsigned char counter = src[i++];
@@ -85,7 +85,7 @@ unsigned int decompressRLE(const char* src, unsigned int length, char* dst, unsi
 
 // max result size = length * 2; returns compressed length
 unsigned int compressRLE(const char* src, unsigned int length, char* dst) {
-    std::uint32_t offset = 0;
+	std::uint32_t offset = 0;
 	std::uint32_t counter = 1;
 	char c = src[0];
 	for (unsigned int i = 1; i < length; i++){

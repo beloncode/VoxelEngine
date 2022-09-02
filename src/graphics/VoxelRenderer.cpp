@@ -37,7 +37,7 @@
 constexpr int chunk_attrs[] = {3,2,4,0};
 
 VoxelRenderer::VoxelRenderer(size_t capacity) : m_capacity(capacity) {
-    m_buffer = new float[capacity * VERTEX_SIZE * 6];
+	m_buffer = new float[capacity * VERTEX_SIZE * 6];
 }
 
 VoxelRenderer::~VoxelRenderer(){
@@ -62,9 +62,9 @@ static inline void renderBlock(float* buffer, int x, int y, int z, const Chunk**
 
 		SETUP_UV(block->textureFaces[3]);
 
-        float lr = LIGHT(x,y+1,z, 0) / 15.0f;
-        float lg = LIGHT(x,y+1,z, 1) / 15.0f;
-        float lb = LIGHT(x,y+1,z, 2) / 15.0f;
+		float lr = LIGHT(x,y+1,z, 0) / 15.0f;
+		float lg = LIGHT(x,y+1,z, 1) / 15.0f;
+		float lb = LIGHT(x,y+1,z, 2) / 15.0f;
 		float ls = LIGHT(x,y+1,z, 3) / 15.0f;
 
 		float lr0 = (LIGHT(x-1,y+1,z,0) + lr*30 + LIGHT(x-1,y+1,z-1,0) + LIGHT(x,y+1,z-1,0)) / 5.0f / 15.0f;

@@ -7,16 +7,16 @@
 
 Lighting::Lighting(Chunks* chunks){
 	this->chunks = chunks;
-    /*
+	/*
 	solverR = new LightSolver(m_chunks, 0);
 	solverG = new LightSolver(m_chunks, 1);
 	solverB = new LightSolver(m_chunks, 2);
 	solverS = new LightSolver(m_chunks, 3);
-    */
-    solverR = std::make_shared<LightSolver>(chunks, 0);
-    solverG = std::make_shared<LightSolver>(chunks, 1);
-    solverB = std::make_shared<LightSolver>(chunks, 2);
-    solverS = std::make_shared<LightSolver>(chunks, 3);
+	*/
+	solverR = std::make_shared<LightSolver>(chunks, 0);
+	solverG = std::make_shared<LightSolver>(chunks, 1);
+	solverB = std::make_shared<LightSolver>(chunks, 2);
+	solverS = std::make_shared<LightSolver>(chunks, 3);
 }
 /*
 Lighting::~Lighting(){
@@ -51,7 +51,7 @@ void Lighting::onChunkLoaded(std::int32_t cx, std::int32_t cy, std::int32_t cz, 
 				const std::int32_t gz = z + cz * CHUNK_D;
 
 				const std::int32_t light = chunk->lightmap->getS(x,0,z);
-                std::int32_t ncy = cy-1;
+				std::int32_t ncy = cy-1;
 				if (light < 15){
 					Chunk* current = chunkLower;
 					if (chunkLower->lightmap->getS(x,15,z) == 0)
@@ -84,7 +84,7 @@ void Lighting::onChunkLoaded(std::int32_t cx, std::int32_t cy, std::int32_t cz, 
 				const std::int32_t gx = x + cx * CHUNK_W;
 				const std::int32_t gy = cy * CHUNK_H;
 				const std::int32_t gz = z + cz * CHUNK_D;
-                std::int32_t ncy = cy;
+				std::int32_t ncy = cy;
 
 				const std::int32_t light = chunkUpper->lightmap->getS(x,0,z);
 
@@ -183,30 +183,30 @@ void Lighting::onChunkLoaded(std::int32_t cx, std::int32_t cy, std::int32_t cz, 
 
 	/* Chunk* other; */
 
-    static const std::int32_t updateIndexes[][3] ={
-            {-1,+0,+0},
-            {+1,+0,+0},
-            {+0,-1,+0},
-            {+0,+1,+0},
-            {+0,+0,-1},
-            {+0,+0,+1}
-    };
+	static const std::int32_t updateIndexes[][3] ={
+			{-1,+0,+0},
+			{+1,+0,+0},
+			{+0,-1,+0},
+			{+0,+1,+0},
+			{+0,+0,-1},
+			{+0,+0,+1}
+	};
 
-    for (auto const updateIndex : updateIndexes){
-        const auto other = chunks->getChunk(cx + updateIndex[0], cy + updateIndex[1], updateIndex[2]);
-        if (other != nullptr){
-            other->modified = true;
-        }
+	for (auto const updateIndex : updateIndexes){
+		const auto other = chunks->getChunk(cx + updateIndex[0], cy + updateIndex[1], updateIndex[2]);
+		if (other != nullptr){
+			other->modified = true;
+		}
 
-    }
-    /*
+	}
+	/*
 	other = m_chunks->getChunk(cx-1,cy,cz); if (other) other->modified = true;
 	other = m_chunks->getChunk(cx+1,cy,cz); if (other) other->modified = true;
 	other = m_chunks->getChunk(cx,cy-1,cz); if (other) other->modified = true;
 	other = m_chunks->getChunk(cx,cy+1,cz); if (other) other->modified = true;
 	other = m_chunks->getChunk(cx,cy,cz-1); if (other) other->modified = true;
 	other = m_chunks->getChunk(cx,cy,cz+1); if (other) other->modified = true;
-     */
+	 */
 }
 
 void Lighting::onBlockSet(int x, int y, int z, int id){

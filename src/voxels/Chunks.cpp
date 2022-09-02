@@ -48,10 +48,10 @@ voxel* Chunks::get(int x, int y, int z) const{
 		return nullptr;
 
 	const std::int32_t lx = x - cx * CHUNK_W;
-    const std::int32_t ly = y - cy * CHUNK_H;
-    const std::int32_t lz = z - cz * CHUNK_D;
+	const std::int32_t ly = y - cy * CHUNK_H;
+	const std::int32_t lz = z - cz * CHUNK_D;
 
-    return &chunk->voxels[(ly * CHUNK_D + lz) * CHUNK_W + lx];
+	return &chunk->voxels[(ly * CHUNK_D + lz) * CHUNK_W + lx];
 }
 
 bool Chunks::isObstacle(int x, int y, int z) const{
@@ -171,7 +171,7 @@ voxel* Chunks::rayCast(vec3 a, vec3 dir, float maxDist, vec3& end, vec3& norm, v
 	float iy = floor(py);
 	float iz = floor(pz);
 
-    auto stepx = (dx > 0.0f) ? 1.0f : -1.0f;
+	auto stepx = (dx > 0.0f) ? 1.0f : -1.0f;
 	auto stepy = (dy > 0.0f) ? 1.0f : -1.0f;
 	auto stepz = (dz > 0.0f) ? 1.0f : -1.0f;
 
@@ -256,7 +256,7 @@ void Chunks::setCenter(WorldFiles* worldFiles, int x, int y, int z) {
 	if (y < 0) cy--;
 	if (z < 0) cz--;
 
-    cx -= static_cast<std::int32_t>(w/2);
+	cx -= static_cast<std::int32_t>(w/2);
 	cy -= static_cast<std::int32_t>(h/2);
 	cz -= static_cast<std::int32_t>(d/2);
 
@@ -274,8 +274,8 @@ void Chunks::translate(WorldFiles* worldFiles, int dx, int dy, int dz){
 			for (std::int32_t x = 0; x < w; x++){
 				Chunk* chunk = chunks[(y * d + z) * w + x];
 				std::int32_t nx = x - dx;
-                std::int32_t ny = y - dy;
-                std::int32_t nz = z - dz;
+				std::int32_t ny = y - dy;
+				std::int32_t nz = z - dz;
 				if (chunk == nullptr)
 					continue;
 				Mesh* mesh = meshes[(y * d + z) * w + x];
@@ -310,9 +310,9 @@ void Chunks::setOffset(int x, int y, int z){
 }
 
 bool Chunks::putChunk(Chunk* chunk) const {
-    std::int32_t x = chunk->x;
-    std::int32_t y = chunk->y;
-    std::int32_t z = chunk->z;
+	std::int32_t x = chunk->x;
+	std::int32_t y = chunk->y;
+	std::int32_t z = chunk->z;
 	x -= ox;
 	y -= oy;
 	z -= oz;

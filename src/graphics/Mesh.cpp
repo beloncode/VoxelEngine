@@ -2,9 +2,9 @@
 #include <GL/glew.h>
 
 Mesh::Mesh(const float* buffer, size_t vertices, const int* attrs) : m_vertices(vertices){
-    m_vertexSize = 0;
+	m_vertexSize = 0;
 	for (std::int32_t i = 0; attrs[i]; i++){
-        m_vertexSize += attrs[i];
+		m_vertexSize += attrs[i];
 	}
 
 	glGenVertexArrays(1, &m_vao);
@@ -23,7 +23,7 @@ Mesh::Mesh(const float* buffer, size_t vertices, const int* attrs) : m_vertices(
 	for (std::int32_t i = 0; attrs[i]; i++){
 		const std::int32_t size = attrs[i];
 		glVertexAttribPointer(i, size, GL_FLOAT, GL_FALSE, static_cast<GLsizei>(m_vertexSize * sizeof(float)),
-                              (GLvoid*)(offset * sizeof(float)));
+							  (GLvoid*)(offset * sizeof(float)));
 		glEnableVertexAttribArray(i);
 		offset += size;
 	}
