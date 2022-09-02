@@ -5,7 +5,7 @@
 
 ## Screenshots
 
-![Image](screen/screenshot.png)
+![Image](screen/screenshot.jpg)
 
 ## How to build and run in linux
 
