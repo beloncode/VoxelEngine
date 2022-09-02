@@ -1,6 +1,5 @@
 // Install dependencies:
 // sudo apt install libgl-dev libglew-dev libglfw3-dev libpng-dev libglm-dev
-#include <iostream>
 #include <cmath>
 
 #include <GL/glew.h>
