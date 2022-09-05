@@ -1,9 +1,9 @@
 #include "Batch2D.h"
 #include "Mesh.h"
 
-[[maybe_unused]] Batch2D::Batch2D(size_t capacity) : /*m_capacity(m_capacity),
-													 m_offset(0), */
-													 m_color(1.0f, 1.0f, 1.0f, 1.0f){
+[[maybe_unused]] Batch2D::Batch2D(size_t capacity) /* : m_capacity(m_capacity),
+													 m_offset(0),
+													 m_color(1.0f, 1.0f, 1.0f, 1.0f) */ {
 	static const int attrs[] = {
 			2, 2, 4, 0 //null terminator
 	};

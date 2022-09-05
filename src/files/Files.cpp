@@ -11,7 +11,7 @@
 	return true;
 }
 
-bool WriteBinaryFile(const std::string& filename, const char* data, size_t size) {
+bool WriteBinaryFile(const std::string& filename, const char* data, size_t size){
 	std::ofstream output(filename, std::ios::binary);
 	if (!output.is_open())
 		return false;
@@ -20,7 +20,7 @@ bool WriteBinaryFile(const std::string& filename, const char* data, size_t size)
 	return true;
 }
 
-[[maybe_unused]] [[maybe_unused]] unsigned int appendBinaryFile(const std::string& filename, const char* data, size_t size) {
+[[maybe_unused]] unsigned int appendBinaryFile(const std::string& filename, const char* data, size_t size){
 	std::ofstream output(filename, std::ios::binary | std::ios::app);
 	if (!output.is_open())
 		return 0;
@@ -30,7 +30,7 @@ bool WriteBinaryFile(const std::string& filename, const char* data, size_t size)
 	return position;
 }
 
-[[maybe_unused]] [[maybe_unused]] bool readBinaryFile(const std::string& filename, char* data, size_t size) {
+[[maybe_unused]] bool readBinaryFile(const std::string& filename, char* data, size_t size){
 	std::ifstream output(filename, std::ios::binary);
 	if (!output.is_open())
 		return false;
@@ -39,7 +39,7 @@ bool WriteBinaryFile(const std::string& filename, const char* data, size_t size)
 	return true;
 }
 
-char* readBinaryFile(const std::string& filename, size_t& length) {
+char* readBinaryFile(const std::string& filename, size_t& length){
 	std::ifstream input(filename, std::ios::binary);
 	if (!input.is_open())
 		return nullptr;
@@ -72,10 +72,10 @@ unsigned int decompressRLE(const char* src, unsigned int length, char* dst, unsi
 	unsigned int counter = 1;
 	char c = src[0];
 	for (unsigned int i = 0; i < length; i++){
-		const char C_next = src[i];
-		if (C_next != c || counter == 256){
+		const char cNext = src[i];
+		if (cNext != c || counter == 256){
 			offset += 2;
-			c = C_next;
+			c = cNext;
 			counter = 0;
 		}
 		counter++;
@@ -89,11 +89,11 @@ unsigned int compressRLE(const char* src, unsigned int length, char* dst) {
 	std::uint32_t counter = 1;
 	char c = src[0];
 	for (unsigned int i = 1; i < length; i++){
-		const char C_next = src[i];
-		if (C_next != c || counter == 256){
+		const char cNext = src[i];
+		if (cNext != c || counter == 256){
 			dst[offset++] = static_cast<char>(counter-1);
 			dst[offset++] = c;
-			c = C_next;
+			c = cNext;
 			counter = 0;
 		}
 		counter++;

@@ -11,6 +11,8 @@
 #ifdef LIBPNG
 #include <png.h>
 
+#include <iostream>
+#include <exception>
 #include <cassert>
 
 static GLuint pngLoad(const char* file, int* width, int* height){
@@ -27,9 +29,12 @@ static GLuint pngLoad(const char* file, int* width, int* height){
 	if (!(f = fopen(file, "r"))){
 		return 0;
 	}
-	fread(header, 1,8,f);
-	is_png = !png_sig_cmp(header, 0, 8);
-	if (!is_png){
+    const auto fret = fread(header, 1, 8,f);
+    if (fret == 1 * 8) {
+      std::runtime_error("Can't read a file specified by header variable inside pngLoad routine");
+    }
+	is_png = png_sig_cmp(header, 0, 8);
+	if (is_png){
 		fclose(f);
 		return 0;
 	}
@@ -66,26 +71,26 @@ static GLuint pngLoad(const char* file, int* width, int* height){
 	*width = static_cast<std::int32_t>(t_width);
 	*height = static_cast<std::int32_t>(t_height);
 	png_read_update_info(png_ptr, info_ptr);
-	row_bytes = static_cast<std::int32_t>(png_get_rowbytes( png_ptr, info_ptr ));
-	image_data = (png_bytep) malloc(row_bytes * t_height * sizeof(png_byte));
+	row_bytes = static_cast<std::int32_t>(png_get_rowbytes(png_ptr, info_ptr));
+	image_data = (png_bytep)malloc(row_bytes * t_height * sizeof(png_byte));
 	assert(image_data != nullptr);
-	if ( !image_data ) {
-		png_destroy_read_struct( &png_ptr, &info_ptr, &end_info );
+	if (!image_data) {
+		png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
 		fclose( f );
 		return 0;
 	}
-	row_pointers = (png_bytepp) malloc( t_height * sizeof(png_bytep) );
-	if ( !row_pointers ) {
-		png_destroy_read_struct( &png_ptr, &info_ptr, &end_info );
-		free( image_data );
-		fclose( f );
+	row_pointers = (png_bytepp) malloc(t_height * sizeof(png_bytep));
+	if (!row_pointers) {
+		png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
+		free(image_data);
+		fclose(f);
 		return 0;
 	}
 	for (unsigned int i = 0; i < t_height; ++i ) {
 		row_pointers[t_height - 1 - i] = image_data + i * row_bytes;
 	}
-	png_read_image( png_ptr, row_pointers );
-	switch ( png_get_color_type( png_ptr, info_ptr ) ) {
+	png_read_image(png_ptr, row_pointers);
+	switch (png_get_color_type(png_ptr, info_ptr)){
 		case PNG_COLOR_TYPE_RGBA:
 			alpha = GL_RGBA;
 			break;
@@ -93,9 +98,9 @@ static GLuint pngLoad(const char* file, int* width, int* height){
 			alpha = GL_RGB;
 			break;
 		default:
-			printf( "Color type %d not supported!\n",
-				png_get_color_type( png_ptr, info_ptr ) );
-			png_destroy_read_struct( &png_ptr, &info_ptr, &end_info );
+			printf("Color type %d not supported!\n",
+				png_get_color_type(png_ptr, info_ptr));
+			png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
 			return 0;
 	}
 	glGenTextures(1, &texture);
@@ -230,7 +235,7 @@ Texture* loadTexture(const std::string& filename){
 	int width, height;
 	GLuint texture = pngLoad(filename.c_str(), &width, &height);
 	if (texture == 0){
-		std::fprintf(stderr, "Could not load texture %s\n", filename.c_str());
+		std::fprintf(stderr, "Couldn't load texture %s\n", filename.c_str());
 		return nullptr;
 	}
 	return new Texture(texture, width, height);
